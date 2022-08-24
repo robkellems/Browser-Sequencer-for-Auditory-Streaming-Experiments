@@ -32,6 +32,16 @@
   background-color: solid grey;
 }
 
+.note-is-selected {
+  background-color: red;
+  border: 1px solid black;
+}
+
+.note-not-selected {
+  background-color: green;
+  border: 1px solid black;
+}
+
 .toggle-play {
   display: flex;
 }

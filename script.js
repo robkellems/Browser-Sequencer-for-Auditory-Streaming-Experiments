@@ -52,7 +52,8 @@ const makeGrid = (notes) => {
     for (let i = 0; i < 8; i++) {
       row.push({
         note: note,
-        isActive: false
+        isActive: false,
+        isSelected: false
       });
     }
     rows.push(row);
@@ -103,6 +104,14 @@ const makeSequencer = () => {
         handleNoteClick(rowIndex, noteIndex, e);
       });
 
+      button.addEventListener('contextmenu', function(ev) {
+        ev.preventDefault();
+        // alert('success!');
+        // return false;
+        handleNoteRightClick(rowIndex, noteIndex, ev);
+        return false;
+    }, false);
+
       seqRow.appendChild(button);
     });
 
@@ -120,6 +129,23 @@ const handleNoteClick = (clickedRowIndex, clickedNoteIndex, e) => {
           { "note-is-active": !!note.isActive }, 
           { "note-not-active": !note.isActive }
         );
+      }
+    });
+  });
+};
+
+const handleNoteRightClick = (clickedRowIndex, clickedNoteIndex, e) => {
+  grid.forEach((row, rowIndex) => {
+    row.forEach((note, noteIndex) => {
+      if (clickedRowIndex === rowIndex && clickedNoteIndex === noteIndex) {
+        if (note.isActive) {
+          note.isSelected = !note.isSelected
+          e.target.className = classNames(
+            "note", 
+            { "note-is-selected": !!note.isSelected }, 
+            { "note-not-selected": !note.isSelected }
+          );
+        }
       }
     });
   });
