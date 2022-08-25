@@ -75,6 +75,7 @@ let started = false;
 const configLoop = () => {
 
   const repeat = (time) => {
+    document.getElementById('marker' + ((beat+7)%8)).className = 'marker';
     grid.forEach((row, index) => {
       let synth = synths[index];
       let note = row[beat];
@@ -82,6 +83,8 @@ const configLoop = () => {
         synth.triggerAttackRelease(note.note, "8n", time);
       }
     });
+
+    document.getElementById('marker' + beat).className = 'marker-is-active';
 
     beat = (beat + 1) % 8;
   };
@@ -106,8 +109,6 @@ const makeSequencer = () => {
 
       button.addEventListener('contextmenu', function(ev) {
         ev.preventDefault();
-        // alert('success!');
-        // return false;
         handleNoteRightClick(rowIndex, noteIndex, ev);
         return false;
     }, false);
@@ -117,6 +118,19 @@ const makeSequencer = () => {
 
     sequencer.appendChild(seqRow);
   });
+};
+
+const makeMarkerSpace = () => {
+  const markerSpace = document.getElementById("markerSpace");
+  const markerRow = document.createElement('div');
+  markerRow.className = 'marker-row'
+  for (let i = 0; i < 8; i++) {
+    const marker = document.createElement("button");
+    marker.id = 'marker' + i;
+    marker.className = "marker";
+    markerRow.appendChild(marker);
+  }
+  markerSpace.appendChild(markerRow);
 };
 
 const handleNoteClick = (clickedRowIndex, clickedNoteIndex, e) => {
@@ -178,4 +192,5 @@ makeSequencer(); */
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
 	makeSequencer();
+  makeMarkerSpace();
 });
