@@ -25,7 +25,7 @@ const makeSynths = (count) => {
     // https://tonejs.github.io/examples/oscillator
     let synth = new Tone.Synth({
       oscillator: {
-        type: "square8"
+        type: "sine"
       }
     }).toDestination();
    
@@ -72,6 +72,8 @@ let beat = 0;
 let playing = false;
 let started = false;
 
+const oscTypes = ['sine', 'square', 'triangle', 'sawtooth']
+
 const configLoop = () => {
 
   const repeat = (time) => {
@@ -99,6 +101,19 @@ const makeSequencer = () => {
     const seqRow = document.createElement("div");
     seqRow.id = `rowIndex`;
     seqRow.className = "sequencer-row";
+
+    const dropdown = document.createElement('select');
+    seqRow.appendChild(dropdown);
+    for (let i = 0; i < oscTypes.length; i++) {
+      let option = document.createElement('option');
+      option.value = oscTypes[i];
+      option.text = oscTypes[i];
+      dropdown.appendChild(option);
+    }
+
+    dropdown.addEventListener('change', function(eve) {
+      synths[rowIndex].oscillator.type = dropdown.options[dropdown.selectedIndex].text;
+    });
 
     row.forEach((note, noteIndex) => {
       const button = document.createElement("button");
@@ -189,8 +204,10 @@ const configPlayButton = () => {
 
 /* configPlayButton();
 makeSequencer(); */
+makeMarkerSpace();
+// synths[0].oscillator.type = 'sine8';
+
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
 	makeSequencer();
-  makeMarkerSpace();
 });
