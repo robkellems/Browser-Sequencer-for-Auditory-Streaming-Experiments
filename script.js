@@ -25,7 +25,10 @@ const makeSynths = (count) => {
     // https://tonejs.github.io/examples/oscillator
     let synth = new Tone.Synth({
       oscillator: {
-        type: "sine"
+        type: "sine",
+        partialCount: 1
+        //although partialCount is set to 1 here, it seems that the 
+        //default is 0 (max number of partials) regardless
       }
     }).toDestination();
    
@@ -102,6 +105,7 @@ const makeSequencer = () => {
     seqRow.id = `rowIndex`;
     seqRow.className = "sequencer-row";
 
+    //creating dropdown menu for oscillator selection
     const dropdown = document.createElement('select');
     seqRow.appendChild(dropdown);
     for (let i = 0; i < oscTypes.length; i++) {
@@ -111,8 +115,26 @@ const makeSequencer = () => {
       dropdown.appendChild(option);
     }
 
+    //waiting for user input to change oscillator
     dropdown.addEventListener('change', function(eve) {
       synths[rowIndex].oscillator.type = dropdown.options[dropdown.selectedIndex].text;
+    });
+
+    //creating number input for partial number selection
+    const partials = document.createElement('select');
+    seqRow.appendChild(partials);
+    let i = 1;
+    while (i < 65) {
+      let option = document.createElement('option');
+      option.value = i;
+      option.text = i;
+      partials.appendChild(option);
+      i = i * 2
+    }
+
+    //waiting for user input to change number of partials
+    partials.addEventListener('change', function(p) {
+      synths[rowIndex].oscillator.partialCount = partials.options[partials.selectedIndex].value;
     });
 
     row.forEach((note, noteIndex) => {
@@ -202,10 +224,7 @@ const configPlayButton = () => {
   });
 };
 
-/* configPlayButton();
-makeSequencer(); */
 makeMarkerSpace();
-// synths[0].oscillator.type = 'sine8';
 
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
