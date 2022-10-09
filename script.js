@@ -66,11 +66,23 @@ const makeGrid = (notes) => {
   return rows;
 };
 
-const synths = makeSynths(6);
 
 // declaring the notes for each row
+// 349.23, 311.13, 261.63, 233.08, 207.65, 174.61 based on https://www.omnicalculator.com/other/note-frequency
 const notes = ["F4", "Eb4", "C4", "Bb3", "Ab3", "F3"];
 let grid = makeGrid(notes);
+
+const synths = makeSynths(6);
+// volume values determined by taking values from a 40 phon perceived loudness curve (https://williamssoundstudio.com/tools/iso-226-equal-loudness-calculator-fletcher-munson.php),
+// scaling each db value down by subtracting 40, and then using linear interpolation to get db values for each of the frequencies in the notes list.
+// comment these lines out to get equal volume for each frequency
+synths[0].volume.value = 6.53;
+synths[1].volume.value = 7.75;
+synths[2].volume.value = 9.90;
+synths[3].volume.value = 11.42;
+synths[4].volume.value = 12.95;
+synths[5].volume.value = 15.50;
+
 let beat = 0;
 let playing = false;
 let started = false;
@@ -94,7 +106,7 @@ const configLoop = () => {
     beat = (beat + 1) % 8;
   };
 
-  Tone.Transport.bpm.value = 120;
+  Tone.Transport.bpm.value = 90;
   Tone.Transport.scheduleRepeat(repeat, "8n");
 };
 
