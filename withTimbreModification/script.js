@@ -76,9 +76,9 @@ const synths = makeSynths(6);
 // volume values determined by taking values from a 40 phon perceived loudness curve (https://williamssoundstudio.com/tools/iso-226-equal-loudness-calculator-fletcher-munson.php),
 // scaling each db value down by subtracting 40, and then using linear interpolation to get db values for each of the frequencies in the notes list.
 // comment these lines out to get equal volume for each frequency
-synths[0].volume.value = 6.53;
-synths[1].volume.value = 7.75;
-synths[2].volume.value = 9.90;
+synths[0].volume.value = 0.003;
+synths[1].volume.value = 0.003;
+synths[2].volume.value = 0.001;
 synths[3].volume.value = 11.42;
 synths[4].volume.value = 12.95;
 synths[5].volume.value = 15.50;
