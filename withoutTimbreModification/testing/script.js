@@ -81,9 +81,11 @@ const makeGrid = (notes) => {
 const notes = ["F4", "Eb4", "C4", "Bb3", "Ab3", "F3"];
 let grid = makeGrid(notes);
 
-//notes which are active in each column
+//list of each pattern which is presented to user (two example patterns included for testing)
+//each list contains notes which are active in each column
 //each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in activeNotes[5]
-let activeNotes = [[],[],[],[],[],[],[],[]]
+let activeNotesList = [[[0],[0],[0],[0],[0],[0],[0],[0]],
+                   [[0],[1],[2],[3],[4],[5],[4],[3]]];
 
 //list of lists containing each possible connection of the currently active notes
 //e.g. if 0,0 and 1,1 are both active, ["0,0","1,1"] will be in 
@@ -127,16 +129,6 @@ const configLoop = () => {
   Tone.Transport.scheduleRepeat(repeat, "8n");
 };
 
-//helper function for makeSequencer, used for drawing lines between potentially connected notes
-function drawLine(x1, y1, x2, y2) {
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-  ctx.closePath();
-}
-
-
 const makeSequencer = () => {
   const sequencer = document.getElementById("sequencer");
   grid.forEach((row, rowIndex) => {
@@ -147,16 +139,6 @@ const makeSequencer = () => {
     row.forEach((note, noteIndex) => {
       const button = document.createElement("button");
       button.className = "note"
-
-      button.addEventListener("click", function(e) {
-        handleNoteClick(rowIndex, noteIndex, e);
-      });
-
-      button.addEventListener('contextmenu', function(ev) {
-        ev.preventDefault();
-        handleNoteRightClick(rowIndex, noteIndex, ev);
-        return false;
-    }, false);
 
       seqRow.appendChild(button);
     });
@@ -176,102 +158,6 @@ const makeMarkerSpace = () => {
   }
   markerSpace.appendChild(markerRow);
 };
-
-//helper function for handleNoteClick, determines if a1 is in a2
-function isArrayInArray(a1, a2) {
-  for (let i = 0; i < a2.length; i++) {
-    let curArray = a2[i];
-    if (a1[0] == curArray[0] && a1[1] == curArray[1]) {
-      return true;
-    }
-  }
-  return false;
-}
-
-const handleNoteClick = (clickedRowIndex, clickedNoteIndex, e) => {
-  grid.forEach((row, rowIndex) => {
-    row.forEach((note, noteIndex) => {
-      if (clickedRowIndex === rowIndex && clickedNoteIndex === noteIndex) {
-        note.isActive = !note.isActive;
-
-        //note should be unselected if not active
-        if (note.isActive == false) { 
-          note.isSelected = false; 
-          e.target.className = classNames(
-            "note",
-            { "note-is-selected": false },
-            { "note-not-selected": true }
-          );
-
-          //removing note from activeNotes
-          const activeIndex = activeNotes[noteIndex].indexOf(rowIndex);
-          if (activeIndex > -1) {
-            activeNotes[noteIndex].splice(activeIndex, 1);
-          }
-
-          //clear list of connections/canvas so it can be filled again without note
-          noteConnections = [];
-          ctx.clearRect(0, 0, 458.667, 344);
-        }
-
-        else {
-          activeNotes[noteIndex].push(rowIndex);
-        }
-
-        e.target.className = classNames(
-          "note", 
-          { "note-is-active": !!note.isActive }, 
-          { "note-not-active": !note.isActive }
-        );
-      }
-    });
-  });
-
-  //draw the canvas and populate noteConnections
-  grid.forEach((row, rowIndex) => {
-    row.forEach((note, noteIndex) => {
-      if (note.isActive) {
-        activeNotes.forEach((column, columnIndex) => {
-          //nodes in same column cannot connect
-          if (noteIndex != columnIndex) {
-            for (let i = 0; i < column.length; i++) {
-              let noteString = rowIndex + "" + noteIndex;
-
-              let rowActive = column[i];
-              let noteToConnect = grid[rowActive][columnIndex];
-              let noteToConnectString = rowActive + "" + columnIndex;
-
-              if (!isArrayInArray([noteString, noteToConnectString], noteConnections) && 
-              !isArrayInArray([noteToConnectString, noteString], noteConnections)) {
-                noteConnections.push([noteString, noteToConnectString]);
-                drawLine(note.canvasX, note.canvasY, noteToConnect.canvasX, noteToConnect.canvasY);
-              }
-            }
-          }
-        });
-      }
-    });
-  });
-};
-
-//commented out for now, will likely be removed entirely once line drawing feature for selection is added
-
-// const handleNoteRightClick = (clickedRowIndex, clickedNoteIndex, e) => {
-//   grid.forEach((row, rowIndex) => {
-//     row.forEach((note, noteIndex) => {
-//       if (clickedRowIndex === rowIndex && clickedNoteIndex === noteIndex) {
-//         if (note.isActive) {
-//           note.isSelected = !note.isSelected
-//           e.target.className = classNames(
-//             "note", 
-//             { "note-is-selected": !!note.isSelected }, 
-//             { "note-not-selected": !note.isSelected }
-//           );
-//         }
-//       }
-//     });
-//   });
-// };
 
 const configPlayButton = () => {
   const button = document.getElementById("play-button");
@@ -295,14 +181,71 @@ const configPlayButton = () => {
   });
 };
 
+//helper function for configSubmitButton, updates activity values for each note when 
+//presenting the next pattern for the user. Is also called at initialization
+function prepareNewPattern() {
+  //set each active note class for audio
+  grid.forEach((row, rowIndex) => {
+    row.forEach((note, noteIndex) => {
+      if (activeNotes[noteIndex].includes(rowIndex)) {
+        note.isActive = true;
+      }
+      else {
+        note.isActive = false;
+      }
+    });
+  });
+
+  //set each active note class for display
+  var seq = document.getElementById('sequencer'),
+  rows = seq.getElementsByClassName('sequencer-row');
+  
+  for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
+    let row = rows[rowIndex].getElementsByTagName('*');
+    for (let noteIndex = 0; noteIndex < 8; noteIndex++) {
+      let note = row[noteIndex]
+      if (grid[rowIndex][noteIndex].isActive == true) {
+        note.className = classNames(
+          "note",
+          {"note-is-active": true},
+          {"note-not-active": false}
+        );
+      }
+      else {
+        note.className = classNames(
+          "note",
+          {"note-is-active": false},
+          {"note-not-active": true}
+        );
+      }
+    }
+  }
+}
+
+const configSubmitButton = () => {
+  const sButton = document.getElementById("submit-button");
+  sButton.addEventListener("click", (e) => {
+
+    //code for collecting user data should go here
+
+    curPattern += 1;
+    activeNotes = activeNotesList[curPattern];
+    prepareNewPattern();
+  });
+}
+
 var canvas = document.getElementById("c");
 var ctx = canvas.getContext("2d");
 ctx.fillStyle = "red";
 ctx.strokeStyle = "red";
 
-makeMarkerSpace();
+let curPattern = 0;
+let activeNotes = activeNotesList[curPattern];
 
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
+  configSubmitButton();
+  makeMarkerSpace();
 	makeSequencer();
+  prepareNewPattern();
 });

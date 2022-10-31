@@ -108,3 +108,12 @@
   margin: auto;
   pointer-events: auto;
 }
+
+.submit-space {
+  display: flex;
+}
+
+.submit-button {
+  margin: auto;
+  pointer-events: auto;
+}

@@ -1,0 +1,100 @@
+* {
+  pointer-events: none;
+}
+
+.canvasWithSequencer {
+  display:grid;
+}
+
+.c {
+  width: 458.667px;
+  height: 344px;
+  margin: auto;
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.sequencer {
+  border-radius: 5px;
+  width: fit-content;
+  grid-row: 1;
+  grid-column: 1;
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: fit-content;
+  margin: auto;
+}
+
+.markerSpace {
+  border-radius: 5px;
+  width: fit-content;
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: fit-content;
+  margin: auto;
+  margin-top: 1em;
+}
+
+.note {
+  border-radius: 5px;
+  height: 4em;
+  width: 4em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  margin: 2px;
+  outline: none;
+  pointer-events: auto;
+}
+
+.marker {
+  border-radius: 5px;
+  height: 4em;
+  width: 4em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  margin: 2px;
+  outline: none;
+}
+
+.sequencer-row {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.marker-row {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.note-is-active {
+  background-color: green;
+  border: 1px solid black;
+}
+
+.note-not-active {
+  background-color: solid grey;
+}
+
+.marker-is-active {
+  border-radius: 5px;
+  height: 4em;
+  width: 4em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  margin: 2px;
+  outline: none;
+  background-color: blue;
+  border: 1px solid black;
+}
+
+.toggle-play {
+  display: flex;
+}
+
+.play-button {
+  margin: auto;
+  pointer-events: auto;
+}
