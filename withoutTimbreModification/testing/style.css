@@ -12,6 +12,7 @@
   margin: auto;
   grid-row: 1;
   grid-column: 1;
+  pointer-events: auto;
 }
 
 .sequencer {
@@ -100,20 +101,11 @@
   border: 1px solid black;
 }
 
-.toggle-play {
+.button-space {
   display: flex;
 }
 
-.play-button {
-  margin: auto;
-  pointer-events: auto;
-}
-
-.submit-space {
-  display: flex;
-}
-
-.submit-button {
+.button {
   margin: auto;
   pointer-events: auto;
 }

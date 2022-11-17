@@ -44,7 +44,8 @@ const makeGrid = (notes) => {
   // parent array to hold each row subarray
   const rows = [];
 
-  var yCoord = 13;
+  var rowI = 0;
+  var yCoord = 28;
 
   for (const note of notes) {
     // declare the subarray
@@ -53,22 +54,24 @@ const makeGrid = (notes) => {
     // and a boolean to flag whether they are "activated"
     // each element in the subarray corresponds to one eigth note
 
-    var xCoord = 19;
+    var xCoord = 28;
 
     for (let i = 0; i < 8; i++) {
       row.push({
         note: note,
         isActive: false,
-        isSelected: false,
+        row: rowI,
+        column: i,
         canvasX: xCoord, 
         canvasY: yCoord
       });
 
-      xCoord += 37.5;
+      xCoord += 57.5;
     }
     rows.push(row);
 
-    yCoord += 25;
+    rowI += 1;
+    yCoord += 57.5;
   }
 
   // we now have 6 rows each containing 16 eighth notes
@@ -85,11 +88,14 @@ let grid = makeGrid(notes);
 //each list contains notes which are active in each column
 //each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in activeNotes[5]
 let activeNotesList = [[[0],[0],[0],[0],[0],[0],[0],[0]],
+                      [[5],[4],[5],[4],[3,5],[],[],[]],
                    [[0],[1],[2],[3],[4],[5],[4],[3]]];
 
-//list of lists containing each possible connection of the currently active notes
-//e.g. if 0,0 and 1,1 are both active, ["0,0","1,1"] will be in 
+//list of lists; each list is a connection created by the user drawing lines
+//e.g. if user connects [0,0] and [1,1], noteConnections will contain [0, 0, 1, 1]
+//[note 1 row, note 1 column, note 2 row, note 2 column]
 let noteConnections = [];
+
 
 const synths = makeSynths(6);
 // volume values determined by taking values from a 40 phon perceived loudness curve (https://williamssoundstudio.com/tools/iso-226-equal-loudness-calculator-fletcher-munson.php),
@@ -226,7 +232,12 @@ const configSubmitButton = () => {
   const sButton = document.getElementById("submit-button");
   sButton.addEventListener("click", (e) => {
 
-    //code for collecting user data should go here
+    //code for collecting user data should go here, do something with noteConnections
+    console.log(noteConnections);
+
+    drawCtx.clearRect(0, 0, 458.667, 344);
+    snapCtx.clearRect(0, 0, 458.667, 344);
+    noteConnections = [];
 
     curPattern += 1;
     activeNotes = activeNotesList[curPattern];
@@ -234,10 +245,154 @@ const configSubmitButton = () => {
   });
 }
 
-var canvas = document.getElementById("c");
-var ctx = canvas.getContext("2d");
-ctx.fillStyle = "red";
-ctx.strokeStyle = "red";
+const configClearButton = () => {
+  const cButton = document.getElementById("clear-button");
+  cButton.addEventListener("click", (e) => {
+    snapCtx.clearRect(0, 0, 458.667, 344);
+    noteConnections = [];
+  });
+}
+
+
+//the functions below for user-drawn lines are based on: https://prodevhub.com/understanding-canvas-draw-a-line-in-canvas-using-mouse-and-touch-events-in-javascript
+const getClientOffset = (event) => {
+  const {pageX, pageY} = event.touches ? event.touches[0] : event;
+  const x = pageX - drawCanvas.offsetLeft;
+  const y = pageY - drawCanvas.offsetTop;
+
+  return {x,y} 
+}
+
+const userDrawLine = () => {
+  drawCtx.beginPath();
+  drawCtx.moveTo(startPosition.x, startPosition.y);
+  drawCtx.lineTo(lineCoordinates.x, lineCoordinates.y);
+  drawCtx.stroke();
+}
+
+const mouseDownListener = (event) => {
+  startPosition = getClientOffset(event);
+  isDrawStart = true;
+}
+
+const mouseMoveListener = (event) => {
+  if(!isDrawStart) return;
+  
+  lineCoordinates = getClientOffset(event);
+  drawCtx.clearRect(0, 0, 458.667, 344);
+
+  userDrawLine();
+}
+
+//helper function for acceptableConnection, checks if a potential connection has already been made
+function connectionExists(c) {
+  for (let i = 0; i < noteConnections.length; i++) {
+    let existingC = noteConnections[i];
+    if (c[0] == existingC[0] && c[1] == existingC[1] && c[2] == existingC[2] && c[3] == existingC[3]) {
+      return true;
+    }
+    if (c[0] == existingC[2] && c[1] == existingC[3] && c[2] == existingC[0] && c[3] == existingC[1]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+//helper function for acceptableConnection, checks if potential connection is connecting a note to itself
+function isSameNote(c) {
+  if (c[0] == c[2] && c[1] == c[3]) {
+    return true;
+  }
+  return false;
+}
+
+//helper function for acceptableConnection, checks if notes in connection are in same column
+function sameColumn(c) {
+  if (c[1] == c[3]) {
+    return true;
+  }
+  return false;
+}
+
+//helper function for mouseupListener, checks multiple conditions to determine if new connection can be added
+function acceptableConnection(c) {
+  return !connectionExists(c) && !isSameNote(c) && !sameColumn(c);
+}
+
+const mouseupListener = (event) => {
+  let startNote = getClosestNote(startPosition.x, startPosition.y);
+  let endNote = getClosestNote(lineCoordinates.x, lineCoordinates.y);
+  let possibleConnection = [startNote[0].row, startNote[0].column, endNote[0].row, endNote[0].column];
+
+  if (startNote[1] == true && endNote[1] == true && acceptableConnection(possibleConnection)) {
+    snapDrawLine(startNote[0].canvasX, startNote[0].canvasY, endNote[0].canvasX, endNote[0].canvasY);
+    noteConnections.push(possibleConnection);
+  }
+  drawCtx.clearRect(0, 0, 458.667, 344);
+
+
+  isDrawStart = false;
+}
+
+
+//below are the functions relating to the line which is snapped to the grid and drawn after the user draws a line
+function getClosestNote(x, y) {
+  let minDistance = Number.POSITIVE_INFINITY;
+  let closestPoint = [null, false];
+  activeNotes.forEach((column, columnIndex) => {
+    column.forEach((row, rowIndex) => {
+      let curNote = grid[row][columnIndex];
+      let distance = Math.sqrt((curNote.canvasX-x)*(curNote.canvasX-x) + (curNote.canvasY-y)*(curNote.canvasY-y));
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestPoint = [curNote, false];
+      }
+    });
+  });
+
+  //if the minDistance is within the space of an active note...
+  if (minDistance < 27) {
+    closestPoint[1] = true;
+  }
+  return closestPoint;
+}
+
+function snapDrawLine(x1, y1, x2, y2) {
+  snapCtx.beginPath();
+  snapCtx.moveTo(x1, y1);
+  snapCtx.lineTo(x2, y2);
+  snapCtx.stroke();
+  snapCtx.closePath();
+}
+
+//setting up the canvas on which the user draws lines
+var drawCanvas = document.getElementById("c1");
+var drawCtx = drawCanvas.getContext("2d");
+drawCanvas.width = drawCanvas.offsetWidth;
+drawCanvas.height = drawCanvas.offsetHeight;
+drawCtx.fillStyle = "red";
+drawCtx.strokeStyle = "red";
+drawCtx.lineWidth = 5;
+drawCanvas.addEventListener('mousedown', mouseDownListener);
+drawCanvas.addEventListener('mousemove', mouseMoveListener);
+drawCanvas.addEventListener('mouseup', mouseupListener);
+drawCanvas.addEventListener('touchstart', mouseDownListener);
+drawCanvas.addEventListener('touchmove', mouseMoveListener);
+drawCanvas.addEventListener('touchend', mouseupListener);
+
+let startPosition = {x: 0, y: 0};
+let lineCoordinates = {x: 0, y: 0};
+let isDrawStart = false;
+
+//setting up the canvas which will draw the connections made by the user, but with the lines snapped to notes
+var snapCanvas = document.getElementById("c2");
+var snapCtx = snapCanvas.getContext("2d");
+snapCanvas.width = snapCanvas.offsetWidth;
+snapCanvas.height = snapCanvas.offsetHeight;
+snapCtx.fillStyle = "red";
+snapCtx.strokeStyle = "red";
+snapCtx.lineWidth = 2;
+
 
 let curPattern = 0;
 let activeNotes = activeNotesList[curPattern];
@@ -245,6 +400,7 @@ let activeNotes = activeNotesList[curPattern];
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
   configSubmitButton();
+  configClearButton();
   makeMarkerSpace();
 	makeSequencer();
   prepareNewPattern();
