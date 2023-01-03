@@ -84,17 +84,20 @@ const makeGrid = (notes) => {
 const notes = ["F4", "Eb4", "C4", "Bb3", "Ab3", "F3"];
 let grid = makeGrid(notes);
 
-//list of each pattern which is presented to user (two example patterns included for testing)
+//list of objects, each containing the id for a pattern to be presented and the pattern itself represented as a list
 //each list contains notes which are active in each column
-//each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in activeNotes[5]
-let activeNotesList = [[[0],[0],[0],[0],[0],[0],[0],[0]],
-                      [[5],[4],[5],[4],[3,5],[],[],[]],
-                   [[0],[1],[2],[3],[4],[5],[4],[3]]];
+//each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in pattern[5]
+let allPatterns = [{id: 1, pattern: [[0],[0],[0],[0],[0],[0],[0],[0]]},
+                   {id: 2, pattern: [[5],[4],[5],[4],[3,5],[],[],[]]},
+                   {id: 3, pattern: [[0],[1],[2],[3],[4],[5],[4],[3]]}];
 
 //list of lists; each list is a connection created by the user drawing lines
 //e.g. if user connects [0,0] and [1,1], noteConnections will contain [0, 0, 1, 1]
 //[note 1 row, note 1 column, note 2 row, note 2 column]
 let noteConnections = [];
+
+//this array will contain the data for each trial, each as an object containing user ID, pattern ID, and noteConnections
+var data = [];
 
 
 const synths = makeSynths(6);
@@ -193,7 +196,7 @@ function prepareNewPattern() {
   //set each active note class for audio
   grid.forEach((row, rowIndex) => {
     row.forEach((note, noteIndex) => {
-      if (activeNotes[noteIndex].includes(rowIndex)) {
+      if (curPattern.pattern[noteIndex].includes(rowIndex)) {
         note.isActive = true;
       }
       else {
@@ -228,20 +231,36 @@ function prepareNewPattern() {
   }
 }
 
+
+
 const configSubmitButton = () => {
   const sButton = document.getElementById("submit-button");
   sButton.addEventListener("click", (e) => {
 
-    //code for collecting user data should go here, do something with noteConnections
-    console.log(noteConnections);
+    //"test" used as userId as placeholder, will be replaced with user info
+    data.push({userId: "test", patternId: allPatterns[patternI].id, noteConnections: noteConnections});
+    console.log(data);
 
-    drawCtx.clearRect(0, 0, 458.667, 344);
-    snapCtx.clearRect(0, 0, 458.667, 344);
-    noteConnections = [];
+    //once subject has gone through all patterns, submit their data
+    if (patternI >= allPatterns.length - 1) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'php/save_json.php');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({ filedata: JSON.stringify(data) }));
 
-    curPattern += 1;
-    activeNotes = activeNotesList[curPattern];
-    prepareNewPattern();
+      //present some screen here which tells subject experiment has ended
+    }
+
+    //otherwise present next pattern
+    else {
+      drawCtx.clearRect(0, 0, 458.667, 344);
+      snapCtx.clearRect(0, 0, 458.667, 344);
+      noteConnections = [];
+  
+      patternI += 1;
+      curPattern = allPatterns[patternI];
+      prepareNewPattern();
+    }
   });
 }
 
@@ -339,7 +358,7 @@ const mouseupListener = (event) => {
 function getClosestNote(x, y) {
   let minDistance = Number.POSITIVE_INFINITY;
   let closestPoint = [null, false];
-  activeNotes.forEach((column, columnIndex) => {
+  curPattern.pattern.forEach((column, columnIndex) => {
     column.forEach((row, rowIndex) => {
       let curNote = grid[row][columnIndex];
       let distance = Math.sqrt((curNote.canvasX-x)*(curNote.canvasX-x) + (curNote.canvasY-y)*(curNote.canvasY-y));
@@ -394,8 +413,8 @@ snapCtx.strokeStyle = "red";
 snapCtx.lineWidth = 2;
 
 
-let curPattern = 0;
-let activeNotes = activeNotesList[curPattern];
+let patternI = 0;
+let curPattern = allPatterns[patternI];
 
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
