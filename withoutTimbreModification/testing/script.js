@@ -239,7 +239,6 @@ const configSubmitButton = () => {
 
     //"test" used as userId as placeholder, will be replaced with user info
     data.push({userId: "test", patternId: allPatterns[patternI].id, noteConnections: noteConnections});
-    console.log(data);
 
     //once subject has gone through all patterns, submit their data
     if (patternI >= allPatterns.length - 1) {
@@ -248,7 +247,13 @@ const configSubmitButton = () => {
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.send(JSON.stringify({ filedata: JSON.stringify(data) }));
 
-      //present some screen here which tells subject experiment has ended
+      //screen which informs the user that the experiment has ended
+      document.body.innerHTML = "";
+      const p = document.createElement("p");
+      p.classList.add("infoText");
+      const node = document.createTextNode("The experiment has concluded and your responses have been recorded. Thank you for participating!");
+      p.appendChild(node);
+      document.body.appendChild(p);
     }
 
     //otherwise present next pattern
