@@ -84,12 +84,60 @@ const makeGrid = (notes) => {
 const notes = ["F4", "Eb4", "C4", "Bb3", "Ab3", "F3"];
 let grid = makeGrid(notes);
 
+//function for accessing CSV containing the patterns
+function loadFile(filePath) {
+  var result = null;
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET", filePath, false);
+  xmlhttp.send();
+  if (xmlhttp.status==200) {
+    result = xmlhttp.responseText;
+  }
+  return result;
+}
+
 //list of objects, each containing the id for a pattern to be presented and the pattern itself represented as a list
 //each list contains notes which are active in each column
 //each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in pattern[5]
-let allPatterns = [{id: 1, pattern: [[0],[0],[0],[0],[0],[0],[0],[0]]},
-                   {id: 2, pattern: [[5],[4],[5],[4],[3,5],[],[],[]]},
-                   {id: 3, pattern: [[0],[1],[2],[3],[4],[5],[4],[3]]}];
+let allPatterns = [];
+
+//helper function for parsing contents of CSV
+function createColumnArray(s) {
+  let columnArray = [];
+  if (s === "x") { return columnArray; }
+
+  for (let i = 0; i < s.length; i++) {
+    if (i % 2 == 0) {
+      columnArray.push(parseInt(s[i]));
+    }
+  }
+  return columnArray;
+}
+
+//open pattern file and parse it as a list of Objects
+Papa.parse(loadFile("patterns.csv"), 
+{
+  header: true,
+  skipEmptyLines: true,
+  complete: function(results) {
+    let r = results.data;
+    r.forEach((p, pIndex) => {
+      let curPId = parseInt(p.id);
+
+      let curPArray = [];
+      curPArray.push(createColumnArray(p.zero));
+      curPArray.push(createColumnArray(p.one));
+      curPArray.push(createColumnArray(p.two));
+      curPArray.push(createColumnArray(p.three));
+      curPArray.push(createColumnArray(p.four));
+      curPArray.push(createColumnArray(p.five));
+      curPArray.push(createColumnArray(p.six));
+      curPArray.push(createColumnArray(p.seven));
+
+      allPatterns.push({id: curPId, pattern: curPArray});
+    });
+  }
+});
 
 //list of lists; each list is a connection created by the user drawing lines
 //e.g. if user connects [0,0] and [1,1], noteConnections will contain [0, 0, 1, 1]
@@ -267,7 +315,7 @@ const configSubmitButton = () => {
       prepareNewPattern();
     }
   });
-}
+};
 
 const configClearButton = () => {
   const cButton = document.getElementById("clear-button");
@@ -275,7 +323,7 @@ const configClearButton = () => {
     snapCtx.clearRect(0, 0, 458.667, 344);
     noteConnections = [];
   });
-}
+};
 
 
 //the functions below for user-drawn lines are based on: https://prodevhub.com/understanding-canvas-draw-a-line-in-canvas-using-mouse-and-touch-events-in-javascript
@@ -285,19 +333,19 @@ const getClientOffset = (event) => {
   const y = pageY - drawCanvas.offsetTop;
 
   return {x,y} 
-}
+};
 
 const userDrawLine = () => {
   drawCtx.beginPath();
   drawCtx.moveTo(startPosition.x, startPosition.y);
   drawCtx.lineTo(lineCoordinates.x, lineCoordinates.y);
   drawCtx.stroke();
-}
+};
 
 const mouseDownListener = (event) => {
   startPosition = getClientOffset(event);
   isDrawStart = true;
-}
+};
 
 const mouseMoveListener = (event) => {
   if(!isDrawStart) return;
@@ -306,7 +354,7 @@ const mouseMoveListener = (event) => {
   drawCtx.clearRect(0, 0, 458.667, 344);
 
   userDrawLine();
-}
+};
 
 //helper function for acceptableConnection, checks if a potential connection has already been made
 function connectionExists(c) {
