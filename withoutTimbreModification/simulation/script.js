@@ -204,6 +204,7 @@ const handleNoteClick = (clickedRowIndex, clickedNoteIndex, e) => {
 
         else {
           activeNotes[noteIndex].push(rowIndex);
+          activeNotes[noteIndex].sort();
         }
 
         e.target.className = classNames(
@@ -264,6 +265,46 @@ const configPlayButton = () => {
   });
 };
 
+function writePattern(p) {
+
+  var data = {
+    id: document.getElementById('patternId').value,
+    zero: p[0],
+    one: p[1],
+    two: p[2],
+    three: p[3],
+    four: p[4],
+    five: p[5],
+    six: p[6],
+    seven: p[7]
+  };
+
+  $.post("getPattern.php", data);
+}
+
+const configSubmitButton = () => {
+  const sButton = document.getElementById("submit-button");
+  sButton.addEventListener("click", (e) => {
+    let submitPattern = [];
+    activeNotes.forEach((col, colIndex) => {
+      if (col.length == 0) {
+        submitPattern.push("x");
+      }
+      else {
+        let rowString = col[0].toString();
+        for (let i = 1; i < col.length; i++) {
+          rowString = rowString + "," + col[i].toString();
+        }
+        submitPattern.push(rowString);
+      }
+    });
+
+    console.log(activeNotes);
+    console.log(submitPattern);
+    writePattern(submitPattern);
+  });
+};
+
 var canvas = document.getElementById("c");
 var ctx = canvas.getContext("2d");
 ctx.fillStyle = "red";
@@ -271,6 +312,7 @@ ctx.strokeStyle = "red";
 
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
+  configSubmitButton();
   makeMarkerSpace();
 	makeSequencer();
 });
