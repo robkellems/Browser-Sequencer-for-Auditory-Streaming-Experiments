@@ -109,6 +109,11 @@
   display: flex;
 }
 
+.submit-button-space {
+  display: flex;
+  padding-top: 8px;
+}
+
 .button {
   margin: auto;
   pointer-events: auto;
