@@ -59,6 +59,19 @@
   outline: none;
 }
 
+.marker-is-active {
+  border-radius: 5px;
+  height: 4em;
+  width: 4em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  margin: 2px;
+  outline: none;
+  background-color: blue;
+  border: 1px solid black;
+}
+
 .sequencer-row {
   display: inline-block;
   white-space: nowrap;
@@ -78,27 +91,18 @@
   background-color: solid grey;
 }
 
-.note-is-selected {
-  background-color: red;
+.note-is-playing {
+  background-color: blue;
   border: 1px solid black;
 }
 
-.note-not-selected {
+.note-is-active.note-not-playing {
   background-color: green;
   border: 1px solid black;
 }
 
-.marker-is-active {
-  border-radius: 5px;
-  height: 4em;
-  width: 4em;
-  border-style: solid;
-  border-width: 1px;
-  border-color: lightgray;
-  margin: 2px;
-  outline: none;
-  background-color: blue;
-  border: 1px solid black;
+.note-not-active.note-not-playing {
+  background-color: solid grey;
 }
 
 .button-space {

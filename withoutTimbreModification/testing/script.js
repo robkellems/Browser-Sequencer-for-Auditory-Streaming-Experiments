@@ -149,15 +149,13 @@ var data = [];
 
 
 const synths = makeSynths(6);
-// volume values determined by taking values from a 40 phon perceived loudness curve (https://williamssoundstudio.com/tools/iso-226-equal-loudness-calculator-fletcher-munson.php),
-// scaling each db value down by subtracting 40, and then using linear interpolation to get db values for each of the frequencies in the notes list.
-// comment these lines out to get equal volume for each frequency
-synths[0].volume.value = 0.003;
-synths[1].volume.value = 0.003;
-synths[2].volume.value = 0.001;
-synths[3].volume.value = 11.42;
-synths[4].volume.value = 12.95;
-synths[5].volume.value = 15.50;
+//loudness (measured in LUFS) seems to be very similar with same volume values
+synths[0].volume.value = 1;
+synths[1].volume.value = 1;
+synths[2].volume.value = 1;
+synths[3].volume.value = 1;
+synths[4].volume.value = 1;
+synths[5].volume.value = 1;
 
 let beat = 0;
 let playing = false;
@@ -167,13 +165,31 @@ const oscTypes = ['sine', 'square', 'triangle', 'sawtooth']
 
 const configLoop = () => {
 
+  //notes in the previously played column
+  let noteElements = [];
+
   const repeat = (time) => {
+    //reset previously played notes from blue to green
+    var seq = document.getElementById('sequencer'),
+    rowsElement = seq.getElementsByClassName('sequencer-row');
+    for (let i = 0; i < noteElements.length; i++) {
+      noteElements[i].classList.add("note-not-playing");
+      noteElements[i].classList.remove("note-is-playing");
+    }
+    noteElements = [];
+
     document.getElementById('marker' + ((beat+7)%8)).className = 'marker';
+
     grid.forEach((row, index) => {
       let synth = synths[index];
       let note = row[beat];
+      let rowElement = rowsElement[index].getElementsByTagName('*');
+      let noteElement = rowElement[beat];
       if (note.isActive) {
         synth.triggerAttackRelease(note.note, "8n", time);
+        noteElement.classList.add("note-is-playing");
+        noteElement.classList.remove("note-not-playing");
+        noteElements.push(noteElement);
       }
     });
 
@@ -262,18 +278,12 @@ function prepareNewPattern() {
     for (let noteIndex = 0; noteIndex < 8; noteIndex++) {
       let note = row[noteIndex]
       if (grid[rowIndex][noteIndex].isActive == true) {
-        note.className = classNames(
-          "note",
-          {"note-is-active": true},
-          {"note-not-active": false}
-        );
+        note.classList.add("note-is-active");
+        note.classList.remove("note-not-active");
       }
       else {
-        note.className = classNames(
-          "note",
-          {"note-is-active": false},
-          {"note-not-active": true}
-        );
+        note.classList.add("note-not-active");
+        note.classList.remove("note-is-active");
       }
     }
   }

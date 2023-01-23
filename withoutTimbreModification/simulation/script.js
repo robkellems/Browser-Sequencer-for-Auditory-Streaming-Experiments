@@ -83,22 +83,20 @@ let grid = makeGrid(notes);
 
 //notes which are active in each column
 //each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in activeNotes[5]
-let activeNotes = [[],[],[],[],[],[],[],[]]
+let activeNotes = [[],[],[],[],[],[],[],[]];
 
 //list of lists containing each possible connection of the currently active notes
 //e.g. if 0,0 and 1,1 are both active, ["0,0","1,1"] will be in 
 let noteConnections = [];
 
 const synths = makeSynths(6);
-// volume values determined by taking values from a 40 phon perceived loudness curve (https://williamssoundstudio.com/tools/iso-226-equal-loudness-calculator-fletcher-munson.php),
-// scaling each db value down by subtracting 40, and then using linear interpolation to get db values for each of the frequencies in the notes list.
-// comment these lines out to get equal volume for each frequency
-synths[0].volume.value = 0.003;
-synths[1].volume.value = 0.003;
-synths[2].volume.value = 0.001;
-synths[3].volume.value = 11.42;
-synths[4].volume.value = 12.95;
-synths[5].volume.value = 15.50;
+//loudness (measured in LUFS) seems to be very similar with same volume values
+synths[0].volume.value = 1;
+synths[1].volume.value = 1;
+synths[2].volume.value = 1;
+synths[3].volume.value = 1;
+synths[4].volume.value = 1;
+synths[5].volume.value = 1;
 
 let beat = 0;
 let playing = false;
@@ -123,7 +121,7 @@ const configLoop = () => {
     beat = (beat + 1) % 8;
   };
 
-  Tone.Transport.bpm.value = 90;
+  Tone.Transport.bpm.value = 70;
   Tone.Transport.scheduleRepeat(repeat, "8n");
 };
 
