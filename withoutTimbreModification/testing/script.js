@@ -53,7 +53,7 @@ const makeGrid = (notes) => {
     // each subarray contains multiple objects that have an assigned note
     // and a boolean to flag whether they are "activated"
     // each element in the subarray corresponds to one eigth note
-
+    
     var xCoord = 28;
 
     for (let i = 0; i < 8; i++) {
@@ -139,6 +139,12 @@ Papa.parse(loadFile("patterns.csv"),
   }
 });
 
+//shuffle the pattern array so each subject gets random order
+for (let i = allPatterns.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i+1));
+  [allPatterns[i], allPatterns[j]] = [allPatterns[j], allPatterns[i]]
+}
+
 //list of lists; each list is a connection created by the user drawing lines
 //e.g. if user connects [0,0] and [1,1], noteConnections will contain [0, 0, 1, 1]
 //[note 1 row, note 1 column, note 2 row, note 2 column]
@@ -198,7 +204,7 @@ const configLoop = () => {
     beat = (beat + 1) % 8;
   };
 
-  Tone.Transport.bpm.value = 90;
+  Tone.Transport.bpm.value = 80;
   Tone.Transport.scheduleRepeat(repeat, "8n");
 };
 
