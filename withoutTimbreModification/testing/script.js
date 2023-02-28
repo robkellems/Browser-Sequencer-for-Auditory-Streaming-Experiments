@@ -295,6 +295,9 @@ function prepareNewPattern() {
   }
 }
 
+function showPattern() {
+  sequencerDisplay.style.visibility = 'visible';
+}
 
 const configSubmitButton = () => {
   const sButton = document.getElementById("submit-button");
@@ -327,15 +330,9 @@ const configSubmitButton = () => {
       patternI += 1;
       curPattern = allPatterns[patternI];
       prepareNewPattern();
+      sequencerDisplay.style.visibility = 'hidden';
+      setTimeout(showPattern, 3000);
     }
-  });
-};
-
-const configClearButton = () => {
-  const cButton = document.getElementById("clear-button");
-  cButton.addEventListener("click", (e) => {
-    snapCtx.clearRect(0, 0, 458.667, 344);
-    noteConnections = [];
   });
 };
 
@@ -345,9 +342,19 @@ const configIdSubmitButton = () => {
     userId = document.getElementById("userId").value;
     instructDisplay.style.display = 'none';
     mainDisplay.style.display = 'block';
-
+    
+    sequencerDisplay.style.visibility = 'hidden';
+    setTimeout(showPattern, 3000);
   })
 }
+
+const configClearButton = () => {
+  const cButton = document.getElementById("clear-button");
+  cButton.addEventListener("click", (e) => {
+    snapCtx.clearRect(0, 0, 458.667, 344);
+    noteConnections = [];
+  });
+};
 
 //the functions below for user-drawn lines are based on: https://prodevhub.com/understanding-canvas-draw-a-line-in-canvas-using-mouse-and-touch-events-in-javascript
 const getClientOffset = (event) => {
@@ -492,17 +499,19 @@ snapCtx.lineWidth = 2;
 let patternI = 0;
 let curPattern = allPatterns[patternI];
 let userId = "";
+var startTime, endTime;
 
 var mainDisplay = document.getElementById("mainDisplay");
 var instructDisplay = document.getElementById("instructions");
 mainDisplay.style.display = 'none';
+var sequencerDisplay = document.getElementById("sequencerDisplay");
 
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
   configSubmitButton();
-  configIdSubmitButton();
   configClearButton();
   makeMarkerSpace();
 	makeSequencer();
   prepareNewPattern();
+  configIdSubmitButton();
 });
