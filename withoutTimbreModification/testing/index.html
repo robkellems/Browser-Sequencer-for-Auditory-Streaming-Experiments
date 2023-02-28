@@ -6,20 +6,30 @@
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-  <div class="container canvasWithSequencer">
-    <div id="sequencer" class="container sequencer"></div>
-    <canvas id="c2" class="c"></canvas>
-    <canvas id="c1" class="c"></canvas>
+
+  <div id="instructions">
+    <p>Hello and welcome to the experiment!</p><br>
+    <label for="userId">Enter your IU student ID:</label><br>
+    <input type="text" id="userId" name="userId"><br>
+    <input type="submit" id="idSubmit" value="Submit">
   </div>
-  <div id='markerSpace' class='container markerSpace'></div>
-  <div class="button-space">
-    <button id="play-button" class="button">Play</button>
-  </div>
-  <div class="button-space">
-    <button id="clear-button" class="button">Clear Lines</button>
-  </div>
-  <div class="submit-button-space">
-    <button id="submit-button" class="button">Submit</button>
+
+  <div id="mainDisplay" >
+    <div class="container canvasWithSequencer">
+      <div id="sequencer" class="container sequencer"></div>
+      <canvas id="c2" class="c"></canvas>
+      <canvas id="c1" class="c"></canvas>
+    </div>
+    <div id='markerSpace' class='container markerSpace'></div>
+    <div class="button-space">
+      <button id="play-button" class="button">Play</button>
+    </div>
+    <div class="button-space">
+      <button id="clear-button" class="button">Clear Lines</button>
+    </div>
+    <div class="submit-button-space">
+      <button id="submit-button" class="button">Submit</button>
+    </div>
   </div>
 
 </body>

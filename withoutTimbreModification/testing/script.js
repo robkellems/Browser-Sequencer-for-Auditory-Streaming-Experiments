@@ -296,13 +296,11 @@ function prepareNewPattern() {
 }
 
 
-
 const configSubmitButton = () => {
   const sButton = document.getElementById("submit-button");
   sButton.addEventListener("click", (e) => {
 
-    //"test" used as userId as placeholder, will be replaced with user info
-    data.push({userId: "test", patternId: allPatterns[patternI].id, noteConnections: noteConnections});
+    data.push({userId: userId, patternId: allPatterns[patternI].id, noteConnections: noteConnections});
 
     //once subject has gone through all patterns, submit their data
     if (patternI >= allPatterns.length - 1) {
@@ -341,6 +339,15 @@ const configClearButton = () => {
   });
 };
 
+const configIdSubmitButton = () => {
+  const button = document.getElementById("idSubmit");
+  button.addEventListener("click", (e) => {
+    userId = document.getElementById("userId").value;
+    instructDisplay.style.display = 'none';
+    mainDisplay.style.display = 'block';
+
+  })
+}
 
 //the functions below for user-drawn lines are based on: https://prodevhub.com/understanding-canvas-draw-a-line-in-canvas-using-mouse-and-touch-events-in-javascript
 const getClientOffset = (event) => {
@@ -484,10 +491,16 @@ snapCtx.lineWidth = 2;
 
 let patternI = 0;
 let curPattern = allPatterns[patternI];
+let userId = "";
+
+var mainDisplay = document.getElementById("mainDisplay");
+var instructDisplay = document.getElementById("instructions");
+mainDisplay.style.display = 'none';
 
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
   configSubmitButton();
+  configIdSubmitButton();
   configClearButton();
   makeMarkerSpace();
 	makeSequencer();

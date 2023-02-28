@@ -1,5 +1,9 @@
-* {
+#mainDisplay {
   pointer-events: none;
+}
+
+#instructions {
+  text-align: center;
 }
 
 .canvasWithSequencer {
