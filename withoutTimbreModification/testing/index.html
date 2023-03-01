@@ -8,8 +8,9 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
   <div id="instructions">
-    <p>Hello and welcome to the experiment!</p><br>
-    <label for="userId">Enter your IU student ID:</label><br>
+    <p>Hello and welcome to the auditory streaming experiment!</p><br><br>
+    <p>You will be presented with a series of melodic patterns </p>
+    <label for="userId">Enter your IU student ID below and press "Submit" to begin the experiment:</label><br><br>
     <input type="text" id="userId" name="userId"><br>
     <input type="submit" id="idSubmit" value="Submit">
   </div>
@@ -21,15 +22,18 @@
       <canvas id="c1" class="c"></canvas>
     </div>
     <div id='markerSpace' class='container markerSpace'></div>
-    <div class="button-space">
-      <button id="play-button" class="button">Play</button>
+    <div id="allButtons">
+      <div class="button-space">
+        <button id="play-button" class="button">Play</button>
+      </div>
+      <div class="button-space">
+        <button id="clear-button" class="button">Clear Lines</button>
+      </div>
+      <div class="submit-button-space">
+        <button id="submit-button" class="button">Submit</button>
+      </div>
     </div>
-    <div class="button-space">
-      <button id="clear-button" class="button">Clear Lines</button>
-    </div>
-    <div class="submit-button-space">
-      <button id="submit-button" class="button">Submit</button>
-    </div>
+    
   </div>
 
 </body>

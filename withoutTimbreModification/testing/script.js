@@ -239,8 +239,7 @@ const makeMarkerSpace = () => {
 };
 
 const configPlayButton = () => {
-  const button = document.getElementById("play-button");
-  button.addEventListener("click", (e) => {
+  playButton.addEventListener("click", (e) => {
     if (!started) {
       Tone.start();
       Tone.getDestination().volume.rampTo(-10, 0.001)
@@ -297,6 +296,7 @@ function prepareNewPattern() {
 
 function showPattern() {
   sequencerDisplay.style.visibility = 'visible';
+  allButtons.style.visibility = 'visible';
 }
 
 const configSubmitButton = () => {
@@ -331,6 +331,12 @@ const configSubmitButton = () => {
       curPattern = allPatterns[patternI];
       prepareNewPattern();
       sequencerDisplay.style.visibility = 'hidden';
+      allButtons.style.visibility = 'hidden';
+
+      playButton.innerText = "Stop";
+      Tone.Transport.start();
+      playing = true;
+
       setTimeout(showPattern, 3000);
     }
   });
@@ -344,6 +350,17 @@ const configIdSubmitButton = () => {
     mainDisplay.style.display = 'block';
     
     sequencerDisplay.style.visibility = 'hidden';
+    allButtons.style.visibility = 'hidden';
+
+    Tone.start();
+    Tone.getDestination().volume.rampTo(-10, 0.001)
+    configLoop();
+    started = true;
+
+    playButton.innerText = "Stop";
+    Tone.Transport.start();
+    playing = true;
+
     setTimeout(showPattern, 3000);
   })
 }
@@ -499,12 +516,15 @@ snapCtx.lineWidth = 2;
 let patternI = 0;
 let curPattern = allPatterns[patternI];
 let userId = "";
-var startTime, endTime;
 
 var mainDisplay = document.getElementById("mainDisplay");
 var instructDisplay = document.getElementById("instructions");
 mainDisplay.style.display = 'none';
 var sequencerDisplay = document.getElementById("sequencerDisplay");
+var allButtons = document.getElementById("allButtons");
+var playButton = document.getElementById("play-button");
+
+
 
 window.addEventListener("DOMContentLoaded", () => {
   configPlayButton();
