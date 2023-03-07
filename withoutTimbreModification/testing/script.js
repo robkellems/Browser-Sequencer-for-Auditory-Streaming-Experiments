@@ -14,19 +14,10 @@ const makeSynths = (count) => {
   for (let i = 0; i < count; i++) {
     // Documentation for Tone.Synth can be found here:
     // https://tonejs.github.io/docs/r13/Synth
-
-    // I'm using an oscillator with a square wave and 8 partials
-    // because I like how it sounds.
-    //
-    // You could simply declare new Tone.Synth().toDestination()
-    //
-    // This would work just as well, but sound slightly different.
-    // Demo different oscillator settings here:
-    // https://tonejs.github.io/examples/oscillator
     let synth = new Tone.Synth({
       oscillator: {
-        type: "square",
-        partialCount: 8
+        type: "sine",
+        partialCount: 64
       }
     }).toDestination();
    
@@ -122,7 +113,7 @@ Papa.parse(loadFile("patterns.csv"),
   complete: function(results) {
     let r = results.data;
     r.forEach((p, pIndex) => {
-      let curPId = parseInt(p.id);
+      let curPId = p.id;
 
       let curPArray = [];
       curPArray.push(createColumnArray(p.zero));
@@ -204,7 +195,7 @@ const configLoop = () => {
     beat = (beat + 1) % 8;
   };
 
-  Tone.Transport.bpm.value = 80;
+  Tone.Transport.bpm.value = 70;
   Tone.Transport.scheduleRepeat(repeat, "8n");
 };
 
@@ -326,6 +317,7 @@ const configSubmitButton = () => {
       drawCtx.clearRect(0, 0, 458.667, 344);
       snapCtx.clearRect(0, 0, 458.667, 344);
       noteConnections = [];
+      colors = ["blue", "red"];
   
       patternI += 1;
       curPattern = allPatterns[patternI];
@@ -337,7 +329,7 @@ const configSubmitButton = () => {
       Tone.Transport.start();
       playing = true;
 
-      setTimeout(showPattern, 3000);
+      setTimeout(showPattern, 3000); 
     }
   });
 };
@@ -370,6 +362,7 @@ const configClearButton = () => {
   cButton.addEventListener("click", (e) => {
     snapCtx.clearRect(0, 0, 458.667, 344);
     noteConnections = [];
+    colors = ["blue", "red"];
   });
 };
 
@@ -407,10 +400,12 @@ const mouseMoveListener = (event) => {
 function connectionExists(c) {
   for (let i = 0; i < noteConnections.length; i++) {
     let existingC = noteConnections[i];
-    if (c[0] == existingC[0] && c[1] == existingC[1] && c[2] == existingC[2] && c[3] == existingC[3]) {
+    // if (c[0] == existingC[0] && c[1] == existingC[1] && c[2] == existingC[2] && c[3] == existingC[3]) {
+    if (c.startNote[0] == existingC.startNote[0] && c.startNote[1] == existingC.startNote[1] && c.endNote[0] == existingC.endNote[0] && c.endNote[1] == existingC.endNote[1]) {
       return true;
     }
-    if (c[0] == existingC[2] && c[1] == existingC[3] && c[2] == existingC[0] && c[3] == existingC[1]) {
+    // if (c[0] == existingC[2] && c[1] == existingC[3] && c[2] == existingC[0] && c[3] == existingC[1]) {
+    if (c.startNote[0] == existingC.endNote[0] && c.startNote[1] == existingC.endNote[1] && c.endNote[0] == existingC.startNote[0] && c.endNote[1] == existingC.startNote[1]) {
       return true;
     }
   }
@@ -419,7 +414,7 @@ function connectionExists(c) {
 
 //helper function for acceptableConnection, checks if potential connection is connecting a note to itself
 function isSameNote(c) {
-  if (c[0] == c[2] && c[1] == c[3]) {
+  if (c.startNote[0] == c.endNote[0] && c.startNote[1] == c.endNote[1]) {
     return true;
   }
   return false;
@@ -427,7 +422,7 @@ function isSameNote(c) {
 
 //helper function for acceptableConnection, checks if notes in connection are in same column
 function sameColumn(c) {
-  if (c[1] == c[3]) {
+  if (c.startNote[1] == c.endNote[1]) {
     return true;
   }
   return false;
@@ -438,14 +433,62 @@ function acceptableConnection(c) {
   return !connectionExists(c) && !isSameNote(c) && !sameColumn(c);
 }
 
+//helper function for getLineColor, for checking if points are the same
+function equalArrays(a, b) {
+  if (a[0] == b[0] && a[1] == b[1]) {
+    return true;
+  }
+  return false;
+}
+
+//called when a connection is made from red-blue or vice versa, makes all lines red
+function allLinesRed() {
+  snapCtx.clearRect(0, 0, 458.667, 344);
+  snapCtx.fillStyle = "red";
+  snapCtx.strokeStyle = "red";
+  for (let i = 0; i < noteConnections.length; i++) {
+    noteConnections[i].color = "red";
+    snapDrawLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
+  }
+  colors = ["blue"];
+}
+
+//function which returns the color of a given connection, both for drawing the line and recording which pattern it belongs to
+function getLineColor(c) {
+  let colorList = []; 
+  for (let i = 0; i < noteConnections.length; i++) {
+    let existingC = noteConnections[i];
+    if (equalArrays(c.startNote, existingC.startNote) || equalArrays(c.startNote, existingC.endNote) || equalArrays(c.endNote, existingC.startNote) || equalArrays(c.endNote, existingC.endNote)) {
+      colorList.push(existingC.color);
+    }
+  } 
+
+  if (colorList.length == 0) {
+    return colors.pop();
+  }
+  else {
+    if (colorList.includes("red") && colorList.includes("blue")) {
+      allLinesRed();
+      return "red";
+    }
+    else {
+      return colorList[0];
+    }
+  }
+}
+
 const mouseupListener = (event) => {
   let startNote = getClosestNote(startPosition.x, startPosition.y);
   let endNote = getClosestNote(lineCoordinates.x, lineCoordinates.y);
-  let possibleConnection = [startNote[0].row, startNote[0].column, endNote[0].row, endNote[0].column];
+  let possibleConnection = {startNote: [startNote[0].row, startNote[0].column], endNote: [endNote[0].row, endNote[0].column], color: "red"};
 
   if (startNote[1] == true && endNote[1] == true && acceptableConnection(possibleConnection)) {
+    possibleConnection.color = getLineColor(possibleConnection);
+    snapCtx.fillStyle = possibleConnection.color;
+    snapCtx.strokeStyle = possibleConnection.color;
     snapDrawLine(startNote[0].canvasX, startNote[0].canvasY, endNote[0].canvasX, endNote[0].canvasY);
     noteConnections.push(possibleConnection);
+    console.log(noteConnections);
   }
   drawCtx.clearRect(0, 0, 458.667, 344);
 
@@ -489,8 +532,8 @@ var drawCanvas = document.getElementById("c1");
 var drawCtx = drawCanvas.getContext("2d");
 drawCanvas.width = drawCanvas.offsetWidth;
 drawCanvas.height = drawCanvas.offsetHeight;
-drawCtx.fillStyle = "red";
-drawCtx.strokeStyle = "red";
+drawCtx.fillStyle = "gray";
+drawCtx.strokeStyle = "gray";
 drawCtx.lineWidth = 5;
 drawCanvas.addEventListener('mousedown', mouseDownListener);
 drawCanvas.addEventListener('mousemove', mouseMoveListener);
@@ -508,8 +551,7 @@ var snapCanvas = document.getElementById("c2");
 var snapCtx = snapCanvas.getContext("2d");
 snapCanvas.width = snapCanvas.offsetWidth;
 snapCanvas.height = snapCanvas.offsetHeight;
-snapCtx.fillStyle = "red";
-snapCtx.strokeStyle = "red";
+var colors = ["blue", "red"];
 snapCtx.lineWidth = 2;
 
 

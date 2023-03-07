@@ -8,8 +8,10 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 
   <div id="instructions">
-    <p>Hello and welcome to the auditory streaming experiment!</p><br><br>
-    <p>You will be presented with a series of melodic patterns </p>
+    <h2>Hello and welcome to the auditory streaming experiment!</h2><br>
+    <p>In this experiment, you will be presented with a series of short melodic patterns in the form of a grid sequencer:</p>
+    <img src="img/sequencerExample.gif" height="300" width="300">
+    <p>Each box you see in this grid is a note within a melody. Each note has a certain pitch (y-axis, with notes that are higher up indicating a higher pitch) and occurs at a certain point in time (x-axis). The green boxes in the grid are the notes which are actually played when the sequencer is running. The blue box(es) are those which are currently being played at a given point in time.</p>
     <label for="userId">Enter your IU student ID below and press "Submit" to begin the experiment:</label><br><br>
     <input type="text" id="userId" name="userId"><br>
     <input type="submit" id="idSubmit" value="Submit">

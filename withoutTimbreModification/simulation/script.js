@@ -25,8 +25,8 @@ const makeSynths = (count) => {
     // https://tonejs.github.io/examples/oscillator
     let synth = new Tone.Synth({
       oscillator: {
-        type: "square",
-        partialCount: 8
+        type: "sine",
+        partialCount: 64
       }
     }).toDestination();
    
@@ -126,13 +126,14 @@ const configLoop = () => {
 };
 
 //helper function for makeSequencer, used for drawing lines between potentially connected notes
-function drawLine(x1, y1, x2, y2) {
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-  ctx.closePath();
-}
+//commented out for now so simulation can be used for inputting patterns
+// function drawLine(x1, y1, x2, y2) {
+//   ctx.beginPath();
+//   ctx.moveTo(x1, y1);
+//   ctx.lineTo(x2, y2);
+//   ctx.stroke();
+//   ctx.closePath();
+// }
 
 
 const makeSequencer = () => {
