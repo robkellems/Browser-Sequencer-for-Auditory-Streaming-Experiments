@@ -486,7 +486,12 @@ const mouseupListener = (event) => {
     possibleConnection.color = getLineColor(possibleConnection);
     snapCtx.fillStyle = possibleConnection.color;
     snapCtx.strokeStyle = possibleConnection.color;
-    snapDrawLine(startNote[0].canvasX, startNote[0].canvasY, endNote[0].canvasX, endNote[0].canvasY);
+    if (startNote[0].column > endNote[0].column) {
+      snapDrawEndLine(startNote[0].canvasX, startNote[0].canvasY, endNote[0].canvasX, endNote[0].canvasY);
+    }
+    else {
+      snapDrawLine(startNote[0].canvasX, startNote[0].canvasY, endNote[0].canvasX, endNote[0].canvasY);
+    }
     noteConnections.push(possibleConnection);
     console.log(noteConnections);
   }
@@ -522,6 +527,22 @@ function getClosestNote(x, y) {
 function snapDrawLine(x1, y1, x2, y2) {
   snapCtx.beginPath();
   snapCtx.moveTo(x1, y1);
+  snapCtx.lineTo(x2, y2);
+  snapCtx.stroke();
+  snapCtx.closePath();
+}
+
+//alternate version of snapDrawLine for connecting last note in melody to first
+function snapDrawEndLine(x1, y1, x2, y2) {
+  let yMidPoint = (y1+y2)/2;
+  snapCtx.beginPath();
+  snapCtx.moveTo(x1, y1);
+  snapCtx.lineTo(458, yMidPoint);
+  snapCtx.stroke();
+  snapCtx.closePath();
+
+  snapCtx.beginPath();
+  snapCtx.moveTo(0, yMidPoint);
   snapCtx.lineTo(x2, y2);
   snapCtx.stroke();
   snapCtx.closePath();
