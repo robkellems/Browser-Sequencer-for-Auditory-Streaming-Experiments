@@ -315,6 +315,13 @@ function prepareNewPattern() {
   }
 }
 
+function playPattern() {
+  betweenDisplay.style.display = 'none';
+  playButton.innerText = "Stop";
+  Tone.Transport.start();
+  playing = true;
+}
+
 function showPattern() {
   sequencerDisplay.style.visibility = 'visible';
   allButtons.style.visibility = 'visible';
@@ -355,16 +362,19 @@ const configSubmitButton = () => {
       sequencerDisplay.style.visibility = 'hidden';
       allButtons.style.visibility = 'hidden';
 
-      playButton.innerText = "Stop";
-      Tone.Transport.start();
-      playing = true;
+      Tone.Transport.stop();
+      playing = false;
 
-      setTimeout(showPattern, 3000); 
+      betweenDisplay.style.display = 'block';
+
+      setTimeout(playPattern, 2000);
+
+      setTimeout(showPattern, 5000); 
     }
   });
 };
 
-const configIdSubmitButton = () => {
+const configBeginButton = () => {
   const button = document.getElementById("beginButton");
   button.addEventListener("click", (e) => {
     instructDisplay.style.display = 'none';
@@ -378,11 +388,11 @@ const configIdSubmitButton = () => {
     configLoop();
     started = true;
 
-    playButton.innerText = "Stop";
-    Tone.Transport.start();
-    playing = true;
+    betweenDisplay.style.display = 'block';
 
-    setTimeout(showPattern, 3000);
+    setTimeout(playPattern, 2000);
+
+    setTimeout(showPattern, 5000);
   })
 }
 
@@ -610,7 +620,9 @@ let curPattern = allPatterns[patternI];
 
 var mainDisplay = document.getElementById("mainDisplay");
 var instructDisplay = document.getElementById("instructions");
+var betweenDisplay = document.getElementById("betweenPatterns");
 mainDisplay.style.display = 'none';
+betweenDisplay.style.display = 'none';
 var sequencerDisplay = document.getElementById("sequencerDisplay");
 var allButtons = document.getElementById("allButtons");
 var playButton = document.getElementById("play-button");
@@ -624,5 +636,5 @@ window.addEventListener("DOMContentLoaded", () => {
   makeMarkerSpace();
 	makeSequencer();
   prepareNewPattern();
-  configIdSubmitButton();
+  configBeginButton();
 });

@@ -10,6 +10,12 @@
   width: 750px;
 }
 
+#betweenPatterns {
+  margin: auto;
+  text-align: center;
+  align-content: center;
+}
+
 .canvasWithSequencer {
   display:grid;
 }
