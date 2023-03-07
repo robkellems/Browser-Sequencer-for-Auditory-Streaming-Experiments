@@ -16,6 +16,11 @@
   align-content: center;
 }
 
+#checkboxNotice {
+  display: none;
+  color: red;
+}
+
 .canvasWithSequencer {
   display:grid;
 }

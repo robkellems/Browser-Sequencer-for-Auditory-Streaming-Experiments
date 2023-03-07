@@ -374,25 +374,40 @@ const configSubmitButton = () => {
   });
 };
 
+const configInstructButton = () => {
+  const button = document.getElementById("instructButton");
+  button.addEventListener("click", (e) => {
+    instructDisplay.style.display = 'none';
+    consentDisplay.style.display = 'block';
+  })
+};
+
 const configBeginButton = () => {
   const button = document.getElementById("beginButton");
   button.addEventListener("click", (e) => {
-    instructDisplay.style.display = 'none';
-    mainDisplay.style.display = 'block';
-    
-    sequencerDisplay.style.visibility = 'hidden';
-    allButtons.style.visibility = 'hidden';
-
-    Tone.start();
-    Tone.getDestination().volume.rampTo(-10, 0.001)
-    configLoop();
-    started = true;
-
-    betweenDisplay.style.display = 'block';
-
-    setTimeout(playPattern, 2000);
-
-    setTimeout(showPattern, 5000);
+    var checkbox = document.getElementById("consent_checkbox");
+    if (checkbox.checked) {
+      consentDisplay.style.display = 'none';
+      mainDisplay.style.display = 'block';
+      
+      sequencerDisplay.style.visibility = 'hidden';
+      allButtons.style.visibility = 'hidden';
+  
+      Tone.start();
+      Tone.getDestination().volume.rampTo(-10, 0.001)
+      configLoop();
+      started = true;
+  
+      betweenDisplay.style.display = 'block';
+  
+      setTimeout(playPattern, 2000);
+  
+      setTimeout(showPattern, 5000);
+    }
+    else {
+      var notice = document.getElementById("checkboxNotice");
+      notice.style.display = 'block';
+    }
   })
 }
 
@@ -487,7 +502,12 @@ function allLinesRed() {
   snapCtx.strokeStyle = "red";
   for (let i = 0; i < noteConnections.length; i++) {
     noteConnections[i].color = "red";
-    snapDrawLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
+    if (noteConnections[i].startNote[1] > noteConnections[i].endNote[1]) {
+      snapDrawEndLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
+    }
+    else {
+      snapDrawLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
+    }
   }
   colors = ["blue"];
 }
@@ -620,9 +640,11 @@ let curPattern = allPatterns[patternI];
 
 var mainDisplay = document.getElementById("mainDisplay");
 var instructDisplay = document.getElementById("instructions");
+var consentDisplay = document.getElementById("consent");
 var betweenDisplay = document.getElementById("betweenPatterns");
 mainDisplay.style.display = 'none';
 betweenDisplay.style.display = 'none';
+consentDisplay.style.display = 'none';
 var sequencerDisplay = document.getElementById("sequencerDisplay");
 var allButtons = document.getElementById("allButtons");
 var playButton = document.getElementById("play-button");
@@ -637,4 +659,5 @@ window.addEventListener("DOMContentLoaded", () => {
 	makeSequencer();
   prepareNewPattern();
   configBeginButton();
+  configInstructButton();
 });
