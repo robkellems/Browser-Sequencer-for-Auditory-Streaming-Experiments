@@ -1,6 +1,36 @@
 import classNames from "https://cdn.skypack.dev/classnames/bind";
 import * as Tone from "https://cdn.skypack.dev/tone";
 
+//get student ID if one is provided
+function getUrlParameter(sParam) {
+  var sPageUrl = decodeURIComponent(window.location.search.substring(1));
+  var sURLVariables = sPageUrl.split('&');
+  for (let i = 0; i < sURLVariables.length; i++) {
+    let sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] === sParam) {
+      return sParameterName[1] === undefined ? true : sParameterName[1];
+    }
+  }
+};
+
+//generates random student ID if no student ID is provided
+function makeId() {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < 8) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}
+
+var SONAID = getUrlParameter('id');
+if (SONAID === undefined) {
+  SONAID = makeId();
+}
+
 const makeSynths = (count) => {
   // declare array to store synths
   const synths = [];
@@ -294,7 +324,7 @@ const configSubmitButton = () => {
   const sButton = document.getElementById("submit-button");
   sButton.addEventListener("click", (e) => {
 
-    data.push({userId: userId, patternId: allPatterns[patternI].id, noteConnections: noteConnections});
+    data.push({userId: SONAID, patternId: allPatterns[patternI].id, noteConnections: noteConnections});
 
     //once subject has gone through all patterns, submit their data
     if (patternI >= allPatterns.length - 1) {
@@ -335,9 +365,8 @@ const configSubmitButton = () => {
 };
 
 const configIdSubmitButton = () => {
-  const button = document.getElementById("idSubmit");
+  const button = document.getElementById("beginButton");
   button.addEventListener("click", (e) => {
-    userId = document.getElementById("userId").value;
     instructDisplay.style.display = 'none';
     mainDisplay.style.display = 'block';
     
@@ -578,7 +607,6 @@ snapCtx.lineWidth = 2;
 
 let patternI = 0;
 let curPattern = allPatterns[patternI];
-let userId = "";
 
 var mainDisplay = document.getElementById("mainDisplay");
 var instructDisplay = document.getElementById("instructions");
