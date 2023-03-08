@@ -374,40 +374,41 @@ const configSubmitButton = () => {
   });
 };
 
-const configInstructButton = () => {
-  const button = document.getElementById("instructButton");
-  button.addEventListener("click", (e) => {
-    instructDisplay.style.display = 'none';
-    consentDisplay.style.display = 'block';
-  })
-};
-
 const configBeginButton = () => {
   const button = document.getElementById("beginButton");
+  var checkbox = document.getElementById("consent_checkbox");
+
   button.addEventListener("click", (e) => {
-    var checkbox = document.getElementById("consent_checkbox");
     if (checkbox.checked) {
+      instructDisplay.style.display = 'block';
       consentDisplay.style.display = 'none';
-      mainDisplay.style.display = 'block';
-      
-      sequencerDisplay.style.visibility = 'hidden';
-      allButtons.style.visibility = 'hidden';
-  
-      Tone.start();
-      Tone.getDestination().volume.rampTo(-10, 0.001)
-      configLoop();
-      started = true;
-  
-      betweenDisplay.style.display = 'block';
-  
-      setTimeout(playPattern, 2000);
-  
-      setTimeout(showPattern, 5000);
     }
     else {
       var notice = document.getElementById("checkboxNotice");
       notice.style.display = 'block';
     }
+  })
+};
+
+const configInstructButton = () => {
+  const button = document.getElementById("instructButton");
+  button.addEventListener("click", (e) => {
+    instructDisplay.style.display = 'none';
+    mainDisplay.style.display = 'block';
+    
+    sequencerDisplay.style.visibility = 'hidden';
+    allButtons.style.visibility = 'hidden';
+
+    Tone.start();
+    Tone.getDestination().volume.rampTo(-10, 0.001)
+    configLoop();
+    started = true;
+
+    betweenDisplay.style.display = 'block';
+
+    setTimeout(playPattern, 2000);
+
+    setTimeout(showPattern, 5000);
   })
 }
 
@@ -644,7 +645,7 @@ var consentDisplay = document.getElementById("consent");
 var betweenDisplay = document.getElementById("betweenPatterns");
 mainDisplay.style.display = 'none';
 betweenDisplay.style.display = 'none';
-consentDisplay.style.display = 'none';
+instructDisplay.style.display = 'none';
 var sequencerDisplay = document.getElementById("sequencerDisplay");
 var allButtons = document.getElementById("allButtons");
 var playButton = document.getElementById("play-button");
