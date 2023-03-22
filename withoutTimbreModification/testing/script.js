@@ -354,7 +354,7 @@ const configSubmitButton = () => {
       drawCtx.clearRect(0, 0, 458.667, 344);
       snapCtx.clearRect(0, 0, 458.667, 344);
       noteConnections = [];
-      colors = ["blue", "red"];
+      colors = ["yellow", "orange", "red"];
   
       patternI += 1;
       curPattern = allPatterns[patternI];
@@ -367,9 +367,9 @@ const configSubmitButton = () => {
 
       betweenDisplay.style.display = 'block';
 
-      setTimeout(playPattern, 2000);
+      setTimeout(playPattern, 1000);
 
-      setTimeout(showPattern, 5000); 
+      setTimeout(showPattern, 1000); 
     }
   });
 };
@@ -406,9 +406,9 @@ const configInstructButton = () => {
 
     betweenDisplay.style.display = 'block';
 
-    setTimeout(playPattern, 2000);
+    setTimeout(playPattern, 1000);
 
-    setTimeout(showPattern, 5000);
+    setTimeout(showPattern, 1000);
   })
 }
 
@@ -417,7 +417,7 @@ const configClearButton = () => {
   cButton.addEventListener("click", (e) => {
     snapCtx.clearRect(0, 0, 458.667, 344);
     noteConnections = [];
-    colors = ["blue", "red"];
+    colors = ["yellow", "orange", "red"];
   });
 };
 
@@ -455,11 +455,9 @@ const mouseMoveListener = (event) => {
 function connectionExists(c) {
   for (let i = 0; i < noteConnections.length; i++) {
     let existingC = noteConnections[i];
-    // if (c[0] == existingC[0] && c[1] == existingC[1] && c[2] == existingC[2] && c[3] == existingC[3]) {
     if (c.startNote[0] == existingC.startNote[0] && c.startNote[1] == existingC.startNote[1] && c.endNote[0] == existingC.endNote[0] && c.endNote[1] == existingC.endNote[1]) {
       return true;
     }
-    // if (c[0] == existingC[2] && c[1] == existingC[3] && c[2] == existingC[0] && c[3] == existingC[1]) {
     if (c.startNote[0] == existingC.endNote[0] && c.startNote[1] == existingC.endNote[1] && c.endNote[0] == existingC.startNote[0] && c.endNote[1] == existingC.startNote[1]) {
       return true;
     }
@@ -496,45 +494,77 @@ function equalArrays(a, b) {
   return false;
 }
 
-//called when a connection is made from red-blue or vice versa, makes all lines red
-function allLinesRed() {
-  snapCtx.clearRect(0, 0, 458.667, 344);
-  snapCtx.fillStyle = "red";
-  snapCtx.strokeStyle = "red";
-  for (let i = 0; i < noteConnections.length; i++) {
-    noteConnections[i].color = "red";
-    if (noteConnections[i].startNote[1] > noteConnections[i].endNote[1]) {
-      snapDrawEndLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
-    }
-    else {
-      snapDrawLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
-    }
-  }
-  colors = ["blue"];
+//redraws the lines based on changes made in updateConnectionColors
+function redrawConnections() {
+	snapCtx.clearRect(0, 0, 458.667, 344);
+	for (let i = 0; i < noteConnections.length; i++) {
+		snapCtx.fillStyle = noteConnections[i].color;
+		snapCtx.strokeStyle = noteConnections[i].color;
+		if (noteConnections[i].startNote[1] > noteConnections[i].endNote[1]) {
+			snapDrawEndLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
+		}
+		else {
+			snapDrawLine(28 + 57.5 * noteConnections[i].startNote[1], 28 + 57.5 * noteConnections[i].startNote[0], 28 + 57.5 * noteConnections[i].endNote[1], 28 + 57.5 * noteConnections[i].endNote[0]);
+		}
+	}
 }
 
-//function which returns the color of a given connection, both for drawing the line and recording which pattern it belongs to
-function getLineColor(c) {
-  let colorList = []; 
-  for (let i = 0; i < noteConnections.length; i++) {
-    let existingC = noteConnections[i];
-    if (equalArrays(c.startNote, existingC.startNote) || equalArrays(c.startNote, existingC.endNote) || equalArrays(c.endNote, existingC.startNote) || equalArrays(c.endNote, existingC.endNote)) {
-      colorList.push(existingC.color);
-    }
-  } 
+//if a new connection is drawn that links previously separate melodic lines, the line colors for each connection are updated to reflect this
+function updateConnectionColors(c, color, visited) {
+	for (let i = 0; i < noteConnections.length; i++) {
+		let existingC = noteConnections[i];
+		if ((equalArrays(c.startNote, existingC.startNote) || equalArrays(c.startNote, existingC.endNote) || equalArrays(c.endNote, existingC.startNote) || equalArrays(c.endNote, existingC.endNote)) && !(equalArrays(c.startNote, existingC.startNote) && equalArrays(c.endNote, existingC.endNote))) {
+			let isNewConnection = true;
+			for (let j = 0; j < visited.length; j++) {
+				if (equalArrays(existingC.startNote, visited[j].startNote) && equalArrays(existingC.endNote, visited[j].endNote)) {
+					isNewConnection = false;
+					break;
+				}
+			}
+			if (isNewConnection) {
+				noteConnections[i].color = color;
+				visited.push(existingC);
+				updateConnectionColors(existingC, color, visited);
+			}
+		}
+	}
+}
 
-  if (colorList.length == 0) {
-    return colors.pop();
-  }
-  else {
-    if (colorList.includes("red") && colorList.includes("blue")) {
-      allLinesRed();
-      return "red";
-    }
-    else {
-      return colorList[0];
-    }
-  }
+//retrieves the line color for the line currently being drawn and updates any previously drawn lines
+function getLineColor(c) {
+	let colorList = [];
+	for (let i = 0; i < noteConnections.length; i++) {
+		let existingC = noteConnections[i];
+		if (equalArrays(c.startNote, existingC.startNote) || equalArrays(c.startNote, existingC.endNote) || equalArrays(c.endNote, existingC.startNote) || equalArrays(c.endNote, existingC.endNote)) {
+			if (!colorList.includes(existingC.color)) {
+				colorList.push(existingC.color);
+			}
+		}
+	}
+	
+	if (colorList.length == 0) {
+		if (colors.length > 0) {
+			return colors.pop();
+		}
+		alert("Maximum number of melodies exceeded. Clear the canvas and make sure to draw one melody at a time.");
+		return "gray";
+	}
+	else if (colorList.length == 1) {
+		return colorList[0];
+	}
+	else {
+		let vals = colorList.map(element => colorToVal[element]);
+		let maxVal = Math.max.apply(Math, vals);
+		let maxColor = valToColor[maxVal];
+		updateConnectionColors(c, maxColor, [c]);
+		redrawConnections();
+		for (let i = 0; i < maxVal; i++) {
+			if (vals.includes(i)) {
+				colors.push(valToColor[i]);
+			}
+		}
+		return maxColor;
+	}
 }
 
 const mouseupListener = (event) => {
@@ -553,10 +583,11 @@ const mouseupListener = (event) => {
       snapDrawLine(startNote[0].canvasX, startNote[0].canvasY, endNote[0].canvasX, endNote[0].canvasY);
     }
     noteConnections.push(possibleConnection);
-    console.log(noteConnections);
   }
   drawCtx.clearRect(0, 0, 458.667, 344);
 
+  console.log(colors);
+  noteConnections.map(element => console.log(element));
 
   isDrawStart = false;
 }
@@ -632,7 +663,9 @@ var snapCanvas = document.getElementById("c2");
 var snapCtx = snapCanvas.getContext("2d");
 snapCanvas.width = snapCanvas.offsetWidth;
 snapCanvas.height = snapCanvas.offsetHeight;
-var colors = ["blue", "red"];
+var colors = ["yellow", "orange", "red"];
+var colorToVal = {"red": 2, "orange": 1, "yellow": 0};
+var valToColor = {2: "red", 1: "orange", 0: "yellow"};
 snapCtx.lineWidth = 2;
 
 
