@@ -367,9 +367,9 @@ const configSubmitButton = () => {
 
       betweenDisplay.style.display = 'block';
 
-      setTimeout(playPattern, 1000);
+      setTimeout(playPattern, 3000);
 
-      setTimeout(showPattern, 1000); 
+      setTimeout(showPattern, 9000); 
     }
   });
 };
@@ -382,6 +382,7 @@ const configBeginButton = () => {
     if (checkbox.checked) {
       instructDisplay.style.display = 'block';
       consentDisplay.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     else {
       var notice = document.getElementById("checkboxNotice");
@@ -406,9 +407,9 @@ const configInstructButton = () => {
 
     betweenDisplay.style.display = 'block';
 
-    setTimeout(playPattern, 1000);
+    setTimeout(playPattern, 3000);
 
-    setTimeout(showPattern, 1000);
+    setTimeout(showPattern, 9000);
   })
 }
 
