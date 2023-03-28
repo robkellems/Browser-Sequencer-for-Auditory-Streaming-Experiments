@@ -341,12 +341,8 @@ const configSubmitButton = () => {
       xhr.send(JSON.stringify({ filedata: JSON.stringify(data) }));
 
       //screen which informs the user that the experiment has ended
-      document.body.innerHTML = "";
-      const p = document.createElement("p");
-      p.classList.add("infoText");
-      const node = document.createTextNode("The experiment has concluded and your responses have been recorded. Thank you for participating!");
-      p.appendChild(node);
-      document.body.appendChild(p);
+      mainDisplay.style.display = 'none';
+      endDisplay.style.display = 'block';
     }
 
     //otherwise present next pattern
@@ -677,9 +673,11 @@ var mainDisplay = document.getElementById("mainDisplay");
 var instructDisplay = document.getElementById("instructions");
 var consentDisplay = document.getElementById("consent");
 var betweenDisplay = document.getElementById("betweenPatterns");
+var endDisplay = document.getElementById("endDisplay");
 mainDisplay.style.display = 'none';
 betweenDisplay.style.display = 'none';
 instructDisplay.style.display = 'none';
+endDisplay.style.display = 'none';
 var sequencerDisplay = document.getElementById("sequencerDisplay");
 var allButtons = document.getElementById("allButtons");
 var playButton = document.getElementById("play-button");

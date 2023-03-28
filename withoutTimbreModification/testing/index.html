@@ -50,6 +50,7 @@
 
   <div id="instructions">
     <h2>Hello and welcome to the auditory streaming experiment!</h2><br>
+    <h3 style="color: red;">NOTE: Please be sure that you are wearing headphones and viewing this page from a desktop browser (as opposed to a mobile browser) before continuing.</h2>
     <p>In this experiment, you will be presented with a series of short melodic patterns in the form of a grid sequencer:</p>
     <img src="img/sequencerExample.gif" height="400" width="400">
     <p>Each box you see in this grid is a note within a melody. Each note has a certain pitch (y-axis, with notes that are higher up indicating a higher pitch) and occurs at a certain point in time (x-axis). The green boxes in the grid are the notes which are actually played when the sequencer is running. The blue box(es) are those which are currently being played at a given point in time.</p>
@@ -59,20 +60,32 @@
     </video><br>
     <p>In this experiment, we are interested in your subjective experience while hearing simple, repeating musical passages. If you're like many people, you will hear an upper melody alternating between two notes while also hearing a lower bass line of a single continually repeating note.  If so, you would draw lines between each adjacent pair of notes in the upper melody like so:</p>
     <img src="img/tutorial2.gif" height="400" width="400">
-    <p>And, because you hear the alternating notes continuing in a loop, you would also draw a line between the rightmost high note and leftmost note:</p>
+    <p>And, because you hear the alternating notes continuing in a loop, you would also draw a line between the rightmost high note and leftmost note like so (from right to left):</p>
     <img src="img/tutorial3.gif" height="400" width="400">
     <p>Then, you would also draw lines between the adjacent notes in the bass line because you also hear them as part of a single stream of notes:</p>
     <img src="img/tutorial4.gif" height="400" width="400">
-    <p>For some of the patterns, you might hear two different streams of notes.  You should draw lines for both streams (as shown in the example above). If the streams are separate, they will appear in different colors. Other times, you may only or primarily hear a single melody, in which case you would only draw lines between adjacent notes in that melody, leaving the other notes unconnected.   If you hear two or more different streams of notes but one is more dominant, you should draw the lines for the more dominant stream first. When drawing a line, make sure to always drag the connection from left to right, unless it is the point at which the melody loops (the connection between the rightmost and leftmost notes), in which case you should drag the connection from right to left, as shown in the example above.</p>
+    <h3 style="color: red;">Carefully read the instructions below before continuing.</h2>
+    <p>For some of the patterns, you might hear two different streams of notes.  You should draw lines for both streams (as shown in the example above). If the streams are separate, they will appear in different colors. Other times, you may only or primarily hear a single melody, in which case you would only draw lines between adjacent notes in that melody, leaving the other notes unconnected.</p>
+    <p>If you hear two or more different streams of notes but one is more dominant, you should draw the lines for the more dominant stream first.</p>
+    <p>When drawing a line, make sure to always drag the connection from left to right, unless it is the point at which the melody loops (the connection between the rightmost and leftmost notes), in which case you should drag the connection from right to left, as shown in the example above.</p>
     <p>Before each pattern is presented, there will be a few seconds of silence, followed by a few seconds during which the melody can be heard but the grid cannot be seen. Once the grid appears, a few buttons will appear below the sequencer:</p>
     <ul>
       <li>"Stop" allows you to pause/play the melodic pattern.</li>
       <li>"Clear Lines" erases all of the lines you have drawn on the grid.</li>
       <li>"Submit" brings you to the next pattern, so only click this if you are completely finished with your response.</li>
     </ul>
-    <h2>Be sure to wear headphones during the experiment.</h2><br><br>
+    <br><br>
     <label for="userId">Click the button below to begin:</label><br><br>
     <input type="submit" id="instructButton" value="Begin Experiment">
+  </div>
+
+  <div id="endDisplay">
+    <h2>The experiment has concluded and your responses have been recorded. Thank you for participating!</h2>
+    <h3>More about this experiment:</h3>
+    <p>The goal of this experiment is to investigate a phenomenon known as auditory streaming, which is the process by which we separate the sounds in our environment into distinct sources. For example, imagine you are walking down a street; you may hear a car passing by, a dog barking, and a lawn mower running. Even though these sounds are hitting your eardrums all at once, you likely do not perceive them as one wall of noise; instead, you are able to parse each sound as belonging to a particular source using various cues (e.g. pitch, duration, timbre) and thus make sense of the world around you. Each of these perceived sources are referred to as auditory streams.</p>
+    <p>This same process occurs when you listen to a piece of music: you may be able to hear multiple different instruments at once, or you may hear the notes being played on one instrument as belonging to different melodies. For instance, if a pianist plays a walking bassline with their left hand and a lead melody with their right, you are likely to hear two distinct melodic lines at once; you have split the sound of the piano into two auditory streams. It is this type of auditory streaming that you likely experienced while responding to these trials: the grouping of notes within a melodic phrase into distinct melodic elements.</p>
+    <p>In particular, this study aims to investigate the cues people use in the process of grouping notes, particularly when timbre is identical between the different notes. The melodic patterns you listened to during this experiment were designed to be perceptually ambiguous to some degree by pitting certain cues against one another. For example, one interpretation of a pattern could suggest that differences in pitch are more salient than temporal differences for auditory streaming, while another interpretation could suggest the opposite.</p>
+    <h3>Based on your responses and the responses of everyone else who has participated in this experiment, we hope to reach some conclusions about which cues are most salient in the process of auditory streaming.</h3>
   </div>
 
   <div id="betweenPatterns">

@@ -16,6 +16,12 @@
   align-content: center;
 }
 
+#endDisplay {
+  margin: auto;
+  text-align: center;
+  align-content: center;
+}
+
 #checkboxNotice {
   display: none;
   color: red;
