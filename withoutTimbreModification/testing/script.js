@@ -341,6 +341,8 @@ const configSubmitButton = () => {
       xhr.send(JSON.stringify({ filedata: JSON.stringify(data) }));
 
       //screen which informs the user that the experiment has ended
+      Tone.Transport.stop();
+      playing = false;
       mainDisplay.style.display = 'none';
       endDisplay.style.display = 'block';
     }
