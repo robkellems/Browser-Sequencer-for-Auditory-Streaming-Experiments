@@ -1,0 +1,127 @@
+* {
+  pointer-events: auto;
+}
+
+.canvasWithSequencer {
+  display: grid;
+}
+
+.c {
+  width: 458.667px;
+  height: 344px;
+  margin: auto;
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.sequencer {
+  border-radius: 5px;
+  width: fit-content;
+  grid-row: 1;
+  grid-column: 1;
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: fit-content;
+  margin: auto;
+}
+
+.markerSpace {
+  border-radius: 5px;
+  width: fit-content;
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: fit-content;
+  margin: auto;
+  margin-top: 1em;
+}
+
+.note {
+  border-radius: 5px;
+  height: 4em;
+  width: 4em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  margin: 2px;
+  outline: none;
+  pointer-events: auto;
+}
+
+.marker {
+  border-radius: 5px;
+  height: 4em;
+  width: 4em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  margin: 2px;
+  outline: none;
+}
+
+.sequencer-row {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.marker-row {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.note-is-active {
+  background-color: green;
+  border: 1px solid black;
+}
+
+.note-not-active {
+  background-color: solid grey;
+}
+
+.marker-is-active {
+  border-radius: 5px;
+  height: 4em;
+  width: 4em;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  margin: 2px;
+  outline: none;
+  background-color: blue;
+  border: 1px solid black;
+}
+
+.note-is-playing {
+  background-color: blue;
+  border: 1px solid black;
+}
+
+.note-is-active.note-not-playing {
+  background-color: green;
+  border: 1px solid black;
+}
+
+.note-not-active.note-not-playing {
+  background-color: solid grey;
+}
+
+.toggle-play {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.inputField {
+  margin-bottom: 10px;
+}
+
+.actionButton {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 20px;
+}

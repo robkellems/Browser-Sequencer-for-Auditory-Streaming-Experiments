@@ -81,22 +81,19 @@ const makeGrid = (notes) => {
 const notes = ["F4", "Eb4", "C4", "Bb3", "Ab3", "F3"];
 let grid = makeGrid(notes);
 
-//notes which are active in each column
-//each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in activeNotes[5]
+// notes which are active in each column
+// each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in activeNotes[5]
 let activeNotes = [[],[],[],[],[],[],[],[]];
 
-//list of lists containing each possible connection of the currently active notes
-//e.g. if 0,0 and 1,1 are both active, ["0,0","1,1"] will be in 
+// list of lists containing each possible connection of the currently active notes
+// e.g. if 0,0 and 1,1 are both active, ["0,0","1,1"] will be in 
 let noteConnections = [];
 
 const synths = makeSynths(6);
-//loudness (measured in LUFS) seems to be very similar with same volume values
-synths[0].volume.value = 1;
-synths[1].volume.value = 1;
-synths[2].volume.value = 1;
-synths[3].volume.value = 1;
-synths[4].volume.value = 1;
-synths[5].volume.value = 1;
+// loudness (measured in LUFS) seems to be very similar with same volume values
+for (let i = 0; i < 6; i++) {
+  synths[i].volume.value = 1;
+}
 
 let beat = 0;
 let playing = false;
@@ -124,17 +121,6 @@ const configLoop = () => {
   Tone.Transport.bpm.value = 70;
   Tone.Transport.scheduleRepeat(repeat, "8n");
 };
-
-//helper function for makeSequencer, used for drawing lines between potentially connected notes
-//commented out for now so simulation can be used for inputting patterns
-// function drawLine(x1, y1, x2, y2) {
-//   ctx.beginPath();
-//   ctx.moveTo(x1, y1);
-//   ctx.lineTo(x2, y2);
-//   ctx.stroke();
-//   ctx.closePath();
-// }
-
 
 const makeSequencer = () => {
   const sequencer = document.getElementById("sequencer");
@@ -170,7 +156,7 @@ const makeMarkerSpace = () => {
   markerSpace.appendChild(markerRow);
 };
 
-//helper function for handleNoteClick, determines if a1 is in a2
+// helper function for handleNoteClick, determines if a1 is in a2
 function isArrayInArray(a1, a2) {
   for (let i = 0; i < a2.length; i++) {
     let curArray = a2[i];
@@ -187,16 +173,16 @@ const handleNoteClick = (clickedRowIndex, clickedNoteIndex, e) => {
       if (clickedRowIndex === rowIndex && clickedNoteIndex === noteIndex) {
         note.isActive = !note.isActive;
 
-        //note should be unselected if not active
+        // note should be unselected if not active
         if (note.isActive == false) { 
 
-          //removing note from activeNotes
+          // removing note from activeNotes
           const activeIndex = activeNotes[noteIndex].indexOf(rowIndex);
           if (activeIndex > -1) {
             activeNotes[noteIndex].splice(activeIndex, 1);
           }
 
-          //clear list of connections/canvas so it can be filled again without note
+          // clear list of connections/canvas so it can be filled again without note
           noteConnections = [];
           ctx.clearRect(0, 0, 458.667, 344);
         }
@@ -215,12 +201,12 @@ const handleNoteClick = (clickedRowIndex, clickedNoteIndex, e) => {
     });
   });
 
-  //draw the canvas and populate noteConnections
+  // draw the canvas and populate noteConnections
   grid.forEach((row, rowIndex) => {
     row.forEach((note, noteIndex) => {
       if (note.isActive) {
         activeNotes.forEach((column, columnIndex) => {
-          //nodes in same column cannot connect
+          // nodes in same column cannot connect
           if (noteIndex != columnIndex) {
             for (let i = 0; i < column.length; i++) {
               let noteString = rowIndex + "" + noteIndex;

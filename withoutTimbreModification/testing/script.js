@@ -1,7 +1,7 @@
 import classNames from "https://cdn.skypack.dev/classnames/bind";
 import * as Tone from "https://cdn.skypack.dev/tone";
 
-//get student ID if one is provided
+// get student ID if one is provided
 function getUrlParameter(sParam) {
   var sPageUrl = decodeURIComponent(window.location.search.substring(1));
   var sURLVariables = sPageUrl.split('&');
@@ -13,7 +13,7 @@ function getUrlParameter(sParam) {
   }
 };
 
-//generates random student ID if no student ID is provided
+// generates random student ID if no student ID is provided
 function makeId() {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -105,7 +105,7 @@ const makeGrid = (notes) => {
 const notes = ["F4", "Eb4", "C4", "Bb3", "Ab3", "F3"];
 let grid = makeGrid(notes);
 
-//function for accessing CSV containing the patterns
+// function for accessing CSV containing the patterns
 function loadFile(filePath) {
   var result = null;
   var xmlhttp = new XMLHttpRequest();
@@ -117,12 +117,12 @@ function loadFile(filePath) {
   return result;
 }
 
-//list of objects, each containing the id for a pattern to be presented and the pattern itself represented as a list
-//each list contains notes which are active in each column
-//each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in pattern[5]
+// list of objects, each containing the id for a pattern to be presented and the pattern itself represented as a list
+// each list contains notes which are active in each column
+// each note is represented by its row e.g. the note at 4,5 in "grid" will be represented by an integer = 4 in pattern[5]
 let allPatterns = [];
 
-//helper function for parsing contents of CSV
+// helper function for parsing contents of CSV
 function createColumnArray(s) {
   let columnArray = [];
   if (s === "x") { return columnArray; }
@@ -135,7 +135,7 @@ function createColumnArray(s) {
   return columnArray;
 }
 
-//open pattern file and parse it as a list of Objects
+// open pattern file and parse it as a list of Objects
 Papa.parse(loadFile("patterns.csv"), 
 {
   header: true,
@@ -160,43 +160,38 @@ Papa.parse(loadFile("patterns.csv"),
   }
 });
 
-//shuffle the pattern array so each subject gets random order
+// shuffle the pattern array so each subject gets random order
 for (let i = allPatterns.length - 1; i > 0; i--) {
   const j = Math.floor(Math.random() * (i+1));
   [allPatterns[i], allPatterns[j]] = [allPatterns[j], allPatterns[i]]
 }
 
-//list of lists; each list is a connection created by the user drawing lines
-//e.g. if user connects [0,0] and [1,1], noteConnections will contain [0, 0, 1, 1]
-//[note 1 row, note 1 column, note 2 row, note 2 column]
+// list of lists; each list is a connection created by the user drawing lines
+// e.g. if user connects [0,0] and [1,1], noteConnections will contain [0, 0, 1, 1]
+// [note 1 row, note 1 column, note 2 row, note 2 column]
 let noteConnections = [];
 
-//this array will contain the data for each trial, each as an object containing user ID, pattern ID, and noteConnections
+// this array will contain the data for each trial, each as an object containing user ID, pattern ID, and noteConnections
 var data = [];
 
 
 const synths = makeSynths(6);
-//loudness (measured in LUFS) seems to be very similar with same volume values
-synths[0].volume.value = 1;
-synths[1].volume.value = 1;
-synths[2].volume.value = 1;
-synths[3].volume.value = 1;
-synths[4].volume.value = 1;
-synths[5].volume.value = 1;
+// loudness (measured in LUFS) seems to be very similar with same volume values
+for (let i = 0; i < 6; i++) {
+  synths[i].volume.value = 1;
+}
 
 let beat = 0;
 let playing = false;
 let started = false;
 
-const oscTypes = ['sine', 'square', 'triangle', 'sawtooth']
-
 const configLoop = () => {
 
-  //notes in the previously played column
+  // notes in the previously played column
   let noteElements = [];
 
   const repeat = (time) => {
-    //reset previously played notes from blue to green
+    // reset previously played notes from blue to green
     var seq = document.getElementById('sequencer'),
     rowsElement = seq.getElementsByClassName('sequencer-row');
     for (let i = 0; i < noteElements.length; i++) {
@@ -246,6 +241,7 @@ const makeSequencer = () => {
   });
 };
 
+// creates the blue playhead below the sequencer grid
 const makeMarkerSpace = () => {
   const markerSpace = document.getElementById("markerSpace");
   const markerRow = document.createElement('div');
@@ -280,10 +276,10 @@ const configPlayButton = () => {
   });
 };
 
-//helper function for configSubmitButton, updates activity values for each note when 
-//presenting the next pattern for the user. Is also called at initialization
+// helper function for configSubmitButton, updates activity values for each note when 
+// presenting the next pattern for the user. Is also called at initialization
 function prepareNewPattern() {
-  //set each active note class for audio
+  // set each active note class for audio
   grid.forEach((row, rowIndex) => {
     row.forEach((note, noteIndex) => {
       if (curPattern.pattern[noteIndex].includes(rowIndex)) {
@@ -295,7 +291,7 @@ function prepareNewPattern() {
     });
   });
 
-  //set each active note class for display
+  // set each active note class for display
   var seq = document.getElementById('sequencer'),
   rows = seq.getElementsByClassName('sequencer-row');
   
@@ -333,21 +329,21 @@ const configSubmitButton = () => {
 
     data.push({userId: SONAID, patternId: allPatterns[patternI].id, noteConnections: noteConnections});
 
-    //once subject has gone through all patterns, submit their data
+    // once subject has gone through all patterns, submit their data
     if (patternI >= allPatterns.length - 1) {
       var xhr = new XMLHttpRequest();
       xhr.open('POST', 'php/save_json.php');
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.send(JSON.stringify({ filedata: JSON.stringify(data) }));
 
-      //screen which informs the user that the experiment has ended
+      // screen which informs the user that the experiment has ended
       Tone.Transport.stop();
       playing = false;
       mainDisplay.style.display = 'none';
       endDisplay.style.display = 'block';
     }
 
-    //otherwise present next pattern
+    // otherwise present next pattern
     else {
       drawCtx.clearRect(0, 0, 458.667, 344);
       snapCtx.clearRect(0, 0, 458.667, 344);
@@ -420,7 +416,7 @@ const configClearButton = () => {
   });
 };
 
-//the functions below for user-drawn lines are based on: https://prodevhub.com/understanding-canvas-draw-a-line-in-canvas-using-mouse-and-touch-events-in-javascript
+// the functions below for user-drawn lines are based on: https://prodevhub.com/understanding-canvas-draw-a-line-in-canvas-using-mouse-and-touch-events-in-javascript
 const getClientOffset = (event) => {
   const {pageX, pageY} = event.touches ? event.touches[0] : event;
   const x = pageX - drawCanvas.offsetLeft;
@@ -450,7 +446,7 @@ const mouseMoveListener = (event) => {
   userDrawLine();
 };
 
-//helper function for acceptableConnection, checks if a potential connection has already been made
+// helper function for acceptableConnection, checks if a potential connection has already been made
 function connectionExists(c) {
   for (let i = 0; i < noteConnections.length; i++) {
     let existingC = noteConnections[i];
@@ -464,7 +460,7 @@ function connectionExists(c) {
   return false;
 }
 
-//helper function for acceptableConnection, checks if potential connection is connecting a note to itself
+// helper function for acceptableConnection, checks if potential connection is connecting a note to itself
 function isSameNote(c) {
   if (c.startNote[0] == c.endNote[0] && c.startNote[1] == c.endNote[1]) {
     return true;
@@ -472,7 +468,7 @@ function isSameNote(c) {
   return false;
 }
 
-//helper function for acceptableConnection, checks if notes in connection are in same column
+// helper function for acceptableConnection, checks if notes in connection are in same column
 function sameColumn(c) {
   if (c.startNote[1] == c.endNote[1]) {
     return true;
@@ -480,12 +476,12 @@ function sameColumn(c) {
   return false;
 }
 
-//helper function for mouseupListener, checks multiple conditions to determine if new connection can be added
+// helper function for mouseupListener, checks multiple conditions to determine if new connection can be added
 function acceptableConnection(c) {
   return !connectionExists(c) && !isSameNote(c) && !sameColumn(c);
 }
 
-//helper function for getLineColor, for checking if points are the same
+// helper function for getLineColor, for checking if points are the same
 function equalArrays(a, b) {
   if (a[0] == b[0] && a[1] == b[1]) {
     return true;
@@ -493,7 +489,7 @@ function equalArrays(a, b) {
   return false;
 }
 
-//redraws the lines based on changes made in updateConnectionColors
+// redraws the lines based on changes made in updateConnectionColors
 function redrawConnections() {
 	snapCtx.clearRect(0, 0, 458.667, 344);
 	for (let i = 0; i < noteConnections.length; i++) {
@@ -508,7 +504,7 @@ function redrawConnections() {
 	}
 }
 
-//if a new connection is drawn that links previously separate melodic lines, the line colors for each connection are updated to reflect this
+// if a new connection is drawn that links previously separate melodic lines, the line colors for each connection are updated to reflect this
 function updateConnectionColors(c, color, visited) {
 	for (let i = 0; i < noteConnections.length; i++) {
 		let existingC = noteConnections[i];
@@ -529,7 +525,7 @@ function updateConnectionColors(c, color, visited) {
 	}
 }
 
-//retrieves the line color for the line currently being drawn and updates any previously drawn lines
+// retrieves the line color for the line currently being drawn and updates any previously drawn lines
 function getLineColor(c) {
 	let colorList = [];
 	for (let i = 0; i < noteConnections.length; i++) {
@@ -592,7 +588,7 @@ const mouseupListener = (event) => {
 }
 
 
-//below are the functions relating to the line which is snapped to the grid and drawn after the user draws a line
+// below are the functions relating to the line which is snapped to the grid and drawn after the user draws a line
 function getClosestNote(x, y) {
   let minDistance = Number.POSITIVE_INFINITY;
   let closestPoint = [null, false];
@@ -607,7 +603,7 @@ function getClosestNote(x, y) {
     });
   });
 
-  //if the minDistance is within the space of an active note...
+  // if the minDistance is within the space of an active note...
   if (minDistance < 27) {
     closestPoint[1] = true;
   }
@@ -622,7 +618,7 @@ function snapDrawLine(x1, y1, x2, y2) {
   snapCtx.closePath();
 }
 
-//alternate version of snapDrawLine for connecting last note in melody to first
+// alternate version of snapDrawLine for connecting last note in melody to first
 function snapDrawEndLine(x1, y1, x2, y2) {
   let yMidPoint = (y1+y2)/2;
   snapCtx.beginPath();
@@ -638,7 +634,7 @@ function snapDrawEndLine(x1, y1, x2, y2) {
   snapCtx.closePath();
 }
 
-//setting up the canvas on which the user draws lines
+// setting up the canvas on which the user draws lines
 var drawCanvas = document.getElementById("c1");
 var drawCtx = drawCanvas.getContext("2d");
 drawCanvas.width = drawCanvas.offsetWidth;
@@ -657,7 +653,7 @@ let startPosition = {x: 0, y: 0};
 let lineCoordinates = {x: 0, y: 0};
 let isDrawStart = false;
 
-//setting up the canvas which will draw the connections made by the user, but with the lines snapped to notes
+// setting up the canvas which will draw the connections made by the user, but with the lines snapped to notes
 var snapCanvas = document.getElementById("c2");
 var snapCtx = snapCanvas.getContext("2d");
 snapCanvas.width = snapCanvas.offsetWidth;
