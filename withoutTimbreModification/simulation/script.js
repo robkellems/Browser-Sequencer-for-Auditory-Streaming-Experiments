@@ -1,3 +1,8 @@
+// This version of the sequencer can be used to draw trials which can then be showed to a subject using the version found in "testing".
+
+// Original code for grid sequencer by Garrett Bodley.
+// https://jsfiddle.net/GarrettBodley/435jp1fa/
+
 import classNames from "https://cdn.skypack.dev/classnames/bind";
 import * as Tone from "https://cdn.skypack.dev/tone";
 

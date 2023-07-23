@@ -1,3 +1,9 @@
+// Old version of the code which allows for timbre selection for each row.
+// This went unused in the final experiment, but you could combine this code with the newer version found in "withoutTimbreModification" for your own use.
+
+// Original code for grid sequencer by Garrett Bodley.
+// https://jsfiddle.net/GarrettBodley/435jp1fa/
+
 import classNames from "https://cdn.skypack.dev/classnames/bind";
 import * as Tone from "https://cdn.skypack.dev/tone";
 

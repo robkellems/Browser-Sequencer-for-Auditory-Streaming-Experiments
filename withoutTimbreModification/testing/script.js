@@ -1,3 +1,8 @@
+// This version of the sequencer is the one actually used for the experiment itself. It runs the trials specified by "patterns.csv" and collects user input.
+
+// Original code for grid sequencer by Garrett Bodley.
+// https://jsfiddle.net/GarrettBodley/435jp1fa/
+
 import classNames from "https://cdn.skypack.dev/classnames/bind";
 import * as Tone from "https://cdn.skypack.dev/tone";
 

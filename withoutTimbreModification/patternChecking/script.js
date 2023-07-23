@@ -1,10 +1,17 @@
+// This version of the sequencer can be used to look over the results of the experiment by viewing the JSON files in "trialData".
+
+// Original code for grid sequencer by Garrett Bodley.
+// https://jsfiddle.net/GarrettBodley/435jp1fa/
+
 import classNames from "https://cdn.skypack.dev/classnames/bind";
 import * as Tone from "https://cdn.skypack.dev/tone";
 
 let allTrials;
 let allPatterns = [];
 
+// list of files containing subject data
 const trialDataFiles = ['subject-64230e56b12f5.json', 'subject-642607e6d8f0d.json', 'subject-64262a26f12e6.json', 'subject-6426ec7bb1c99.json', 'subject-642a3c5be053d.json', 'subject-642c6720012d5.json', 'subject-642cdd56614ac.json', 'subject-642d089c7bdce.json', 'subject-642dd5507e122.json', 'subject-642de2d7dd7c3.json', 'subject-642df61daa640.json', 'subject-642e0a5ba4912.json', 'subject-642e13c1a50b0.json', 'subject-6434cd3788e16.json', 'subject-6435a5f92196c.json', 'subject-6436e01865914.json', 'subject-6436e741b62b4.json', 'subject-6436ece7e23f5.json', 'subject-64381ab93fbbd.json', 'subject-643825af0bb95.json', 'subject-643826af50871.json', 'subject-64384bbb95a05.json', 'subject-6438b4629c8e5.json', 'subject-643d9f4d9c975.json', 'subject-643dd821cf38e.json', 'subject-643ddb60480e9.json', 'subject-643eb950008bc.json', 'subject-643ebda2e947d.json', 'subject-643ef4f2c9c94.json', 'subject-643efca62e376.json', 'subject-643efe82376d2.json', 'subject-643f21010e5ed.json', 'subject-643f34d2168ab.json', 'subject-643f3b917c7d7.json', 'subject-643f4fd0771a2.json', 'subject-6440e24b32257.json', 'subject-644193836f4a1.json', 'subject-6441aa219a707.json', 'subject-6441d390d0c85.json', 'subject-6441ff8b6d07b.json', 'subject-6442835edf541.json', 'subject-6442c267d3007.json', 'subject-6442d46f4b5a2.json', 'subject-6442f148b7dce.json', 'subject-6442f94949ff4.json', 'subject-6446bb45e2fe1.json', 'subject-6446ebdb181bb.json', 'subject-6446f9d4be4a1.json', 'subject-64470c76454cf.json', 'subject-644808fa468b9.json', 'subject-6448218c9f16a.json', 'subject-64484a38df520.json', 'subject-6448502784c00.json', 'subject-64489849c0435.json', 'subject-64489c3b5dc8c.json', 'subject-6448a1b9ca8f2.json', 'subject-64496e5f1525f.json', 'subject-6449ac0b09637.json', 'subject-6449ac35ef433.json', 'subject-6449bce10333d.json', 'subject-6449bf9f06685.json', 'subject-6449c54688c78.json', 'subject-6449c90419ef8.json', 'subject-6449ca6894a6e.json'];
+// list of patterns which are displayed during the experiment
 const trialNames = ['goodContinuation2','pitchProx5','repVsPitchHiLo2','repVsPitchLoHi2','loRepHiCont','hiRepLoContBegMissing','pitchProximity2','commonFate1','salience1','salience2','priority4','loRepHiContBegEndMissing','loRepHiContBegMissing','hiRepLoContEndMissing','alternateVsMountain1','repVsPitchLoHi','competition2','goodContinuation1','hiRepLoCont','competition1','hiRepLoContBegEndMissing','priority3','pitchProx3','AlternateVsMountain4','pitchProx6','pitchProx4','pitchProx2','priority2','continuousBass2','priority1','continuousBass1','pitchProx1','alternateVsMountain2','AlternateVsMountain3','pitchProximity1','commonFate2','loRepHiContEndMissing','repVsPitchHiLo']
 function createColumnArray(s) {
     let columnArray = [];
@@ -357,31 +364,6 @@ const configShowButton = () => {
         let patternExists = false;
         let userExists = false;
 
-        // iterate through each file to find correct user id
-        // for (let i in allTrials) {
-        //     if (allTrials[i][0].userId == myUser) {
-        //         userExists = true;
-        //         let userTrials = allTrials[i];
-        //         for (let j in userTrials) {
-        //             if (userTrials[j].patternId == myPattern) {
-        //                 let myTrial = userTrials[j].noteConnections;
-        //                 for (let k in myTrial) {
-        //                     ctx.fillStyle = myTrial[k].color;
-        //                     ctx.strokeStyle = myTrial[k].color;
-        //                     if (myTrial[k].startNote[1] > myTrial[k].endNote[1]) {
-        //                         snapDrawEndLine(28 + 57.5 *myTrial[k].startNote[1], 28 + 57.5 *myTrial[k].startNote[0],28 + 57.5 *myTrial[k].endNote[1],28 + 57.5 *myTrial[k].endNote[0]);
-        //                     }
-        //                     else {
-        //                         snapDrawLine(28 + 57.5 *myTrial[k].startNote[1], 28 + 57.5 *myTrial[k].startNote[0],28 + 57.5 *myTrial[k].endNote[1],28 + 57.5 *myTrial[k].endNote[0]);
-        //                     }
-        //                 }
-        //                 break;
-        //             }
-        //         }
-        //         break;
-        //     }
-        // }
-
         for (let i in allTrials) {
           if (allTrials[i][0] == myUser) {
             userExists = true;
@@ -405,8 +387,6 @@ const configShowButton = () => {
             break;
           }
         }
-
-
 
         // iterate through all patterns to find correct one to display
         for (let i in allPatterns) {
